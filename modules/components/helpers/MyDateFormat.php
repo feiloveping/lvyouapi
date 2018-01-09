@@ -29,4 +29,47 @@ class MyDateFormat
         return ['day'=>$day,'hour'=>$hour , 'min'=>$min];
     }
 
+    public function getThreeMonthDate()
+    {
+        // 当前时间凌晨
+        $today = strtotime(date("Y-m-d"));
+
+        // 三月后的时间戳
+        $afterThreeMonth = strtotime('+3 month');
+        $data = [];
+        for ($i = $today;$i<$afterThreeMonth;$i = $i + 86400)
+        {
+            $data[] = $i;
+        }
+
+        return $data;
+    }
+
+    public function initDate($data,$key)
+    {
+
+        $alltime = $this->getThreeMonthDate();
+        // 格式化数据 拿到所需要的价格
+        foreach ($alltime as $k=>$v)
+        {
+            foreach ($data as $dk=>$dv)
+            {
+                if($dv[$key] == $v)
+                {
+                    $alltime[$k] = $dv;
+                }
+            }
+        }
+        // 格式化数据 统一数据格式
+        foreach ($alltime as $k=>$v)
+        {
+            if(!is_array($alltime[$k])){
+                unset($alltime[$k]);
+                $alltime[$k][$key] = $v;
+            }
+
+        }
+        return $alltime;
+    }
+
 }
