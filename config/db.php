@@ -4,9 +4,9 @@
 return [
 
    'class' => 'yii\db\Connection',
-   'dsn' => 'mysql:host=localhost;dbname=stourwebcms',
+   'dsn' => 'mysql:host=localhost;dbname=***',
    'username' => 'admin',
-   'password' => 'zhly@123456#',
+   'password' => '****',
    'charset' => 'utf8',
    'tablePrefix' => 'sline_',
 
