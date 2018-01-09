@@ -78,8 +78,10 @@ class NotesController extends DefaultController
         $notes = Notes::getDetails($id);
 
         if(empty($notes)) return ['code'=>404,'msg'=>"信息未找到",'data'=>''];
+        $api_url    =   \Yii::$app->params['api_url'];
 
-        $app_url    =   \Yii::$app->params['app_url'];
+        // 获得游记的详情 - 便于前段使用webview
+        $notes['content_url']    =      $api_url . '/v1/detail?type=notesdetail&id=' . $id;
         // 根据id和typeid获得评论量
         $typeid         =   $this->_typeid;
         $commentcount   =   Comment::getCommentCountByTypeId($typeid,$id)['count'];

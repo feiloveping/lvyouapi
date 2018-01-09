@@ -105,17 +105,19 @@ class ArticleController extends DefaultController
         $typeid         =   \Yii::$app->params['typeid']['article'];
         $commentcount   =   Comment::getCommentCountByTypeId($typeid,$id)['count'];
         $data = [
-            'id'        =>      $article['id'],
-            'title'     =>      $article['title'],
-            'shownum'  =>      $article['shownum'],
-            'modtime'   =>      $article['modtime'],
-            'content'   =>      str_replace('/uploads/',$app_url . '/uploads/',$article['content']),
-            'commentcount'=>    $commentcount,
+            'id'            =>      $article['id'],
+            'title'         =>      $article['title'],
+            'shownum'       =>      $article['shownum'],
+            'modtime'       =>      $article['modtime'],
+            'content'       =>      str_replace('/uploads/',$app_url . '/uploads/',$article['content']),
+            'commentcount'  =>    $commentcount,
         ];
+
+        // 增加详情的链接 - webview处理
+        $api_url                =       \Yii::$app->params['api_url'];
+        $data['content_url']    =      $app_url . '/v1/detail?type=articledetail&id=' . $data['id'];
         return ['code'=>200,'data'=>$data,'msg'=>'ok'];
-
     }
-
 
     // 城市选择
     public function actionCity()
