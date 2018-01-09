@@ -72,15 +72,17 @@ class NotesController extends DefaultController
     // 详情页信息
     public function actionNotesDetail()
     {
-
         $id     =       \Yii::$app->request->get('id',null);
+        $app_url=        \Yii::$app->params['app_url'];
         if(!$id) return ['code'=>404,'msg'=>"参数不能为空",'data'=>''];
         $notes = Notes::getDetails($id);
-
         if(empty($notes)) return ['code'=>404,'msg'=>"信息未找到",'data'=>''];
-        $api_url    =   \Yii::$app->params['api_url'];
+
+        // 对详情的图片进行地址更换
+        $notes['content']       =       str_replace('"/uploads/','"' . $app_url . '/uploads/',$notes['content']);
 
         // 获得游记的详情 - 便于前段使用webview
+        $api_url    =   \Yii::$app->params['api_url'];
         $notes['content_url']    =      $api_url . '/v1/detail?type=notesdetail&id=' . $id;
         // 根据id和typeid获得评论量
         $typeid         =   $this->_typeid;

@@ -65,8 +65,10 @@ class MemberLinkmanController extends DefaultController
 
         if($data['sex'] == 1)
             $data['sex'] = '男';
-        else
+        elseif($data['sex'] == 2)
             $data['sex'] = '女';
+        else
+            $data['sex'] = '保密';
 
         $card = \Yii::$app->params['linkmanCardType'];
 

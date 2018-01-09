@@ -9,9 +9,7 @@
 return [
     /*  -------------------------------------------首頁接口--------------------------------------------     */
     'GET v1/home' => 'v1/home/home',                                                //首頁home
-    'GET v1/hotkeyword'=>'v1/default/hot-keyword',                                  // 景點主頁 - 熱門搜索
-
-
+    'GET v1/hotkeyword'=>'v1/search-keyword/hot-keyword',                           //主頁 - 熱門搜索
 
     /*      ---------------------------------------景點列表頁 -----------------------------------------     */
     'GET v1/spotindex'      =>      'v1/spot/spot-index',                       // 景点首页

@@ -55,23 +55,5 @@ class DefaultController extends ActiveController
         return MyEncrypt::passport_decrypt($this->token,$this->key);
     }
 
-    // 熱門搜索关键词 - 全局使用
-    public function actionHotKeyword()
-    {
-        $cache      =       \Yii::$app->cache;
-        if(!$cache->exists('hotSearchKeyWord'))
-        {
-            $hotkeyword = SearchKeyword::getKeyword();
-            $cache->set('hotSearchKeyWord',$hotkeyword,3600);
-        }
-
-        $hotkeyword = $cache->get('hotSearchKeyWord');
-
-        if(empty($hotkeyword))
-            return ['code'=>0,'data'=>'','msg'=>'未找到数据'];
-        else
-            return ['code'=>1,'data'=>$hotkeyword,'msg'=>'ok'];
-    }
-
 
 }
