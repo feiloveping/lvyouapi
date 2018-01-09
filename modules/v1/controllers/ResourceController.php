@@ -17,7 +17,6 @@ class ResourceController extends Controller
     // 获得详情页的内容
     public function actionDetails()
     {
-
         return $this->render('detail');
     }
 

@@ -9,6 +9,7 @@
 namespace app\modules\v1\controllers;
 
 
+use app\modules\components\helpers\MyDateFormat;
 use app\modules\v1\models\MemberLinkman;
 use app\modules\v1\models\MemberOrderTourer;
 use app\modules\v1\models\Spot;
@@ -58,8 +59,12 @@ class SpotOrderController extends DefaultController
     public function actionGetSpotTicketTime($id)
     {
         $spotticketTime = SpotTicketPrice::getTicketTimeByTid($id);
-        if ($spotticketTime)
+
+        if ($spotticketTime){
+            $mydateObj = new MyDateFormat();
+            $spotticketTime =  $mydateObj->initDate($spotticketTime,'day');
             return ['code'=>200,'data'=>$spotticketTime,'msg'=>'ok'];
+        }
         else
             return ['code'=>404,'data'=>'','msg'=>'景点门票信息没找到'];
     }

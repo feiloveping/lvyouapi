@@ -275,15 +275,15 @@ class HotelController extends DefaultController
     // 点评上部信息总计
     public function actionCommentCount()
     {
-
-        $request        =       \Yii::$app->request;
-        $typeid         =       \Yii::$app->params['typeid']['hotel']   ;
-        $hotelid        =       $request->get('id');
-        $commentArr      =       Comment::getCommentStarCount($typeid,$hotelid);
-        $commentCount    =       Comment::getLevelComment($commentArr);
-        $commentCount['count'] = Comment::getCommentCountByTypeId($typeid,$hotelid)['count'];
-        $commentCount['imgcount']=Comment::getCommentHasImg($typeid,$hotelid);
-        return         ['code'=>200,'data'=> $commentCount,'msg'=>'ok'];
+        $commentObj             =       new Comment();
+        $request                =       \Yii::$app->request;
+        $typeid                 =       \Yii::$app->params['typeid']['hotel']   ;
+        $hotelid                =       $request->get('id');
+        $commentArr             =       $commentObj->getCommentStarCount($typeid,$hotelid);
+        $commentCount           =       $commentObj->getLevelComment($commentArr);
+        $commentCount['count']  =       $commentObj->getCommentCountByTypeId($typeid,$hotelid)['count'];
+        $commentCount['imgcount']=      $commentObj->getCommentHasImg($typeid,$hotelid);
+        return ['code'=>200,'data'=> $commentCount,'msg'=>'ok'];
     }
 
     // 酒店的问答

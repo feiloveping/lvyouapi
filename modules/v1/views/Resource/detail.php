@@ -49,6 +49,7 @@ AppAsset::register($this);
             url:_https+'v1/notesdetail/'+toJson().id,
             type:'GET',
             success:function(data){
+
                 $("#title").html(data.data.title);
                 $("#date").html(getLocalTime(data.data.modtime));
                 $(".content").html(data.data.content)
@@ -59,6 +60,7 @@ AppAsset::register($this);
     function getLocalTime(nS) {
         return new Date(parseInt(nS) * 1000).toLocaleString().replace(/:\d{1,2}$/,' ');
     }
+
 </script>
 <?php $this->endBody() ?>
 </body>

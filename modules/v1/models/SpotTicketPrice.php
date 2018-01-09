@@ -34,6 +34,4 @@ class SpotTicketPrice extends ActiveRecord
             ->one();
     }
 
-
-
 }
