@@ -30,13 +30,16 @@ class Article extends ActiveRecord
     }
 
     // 根据参数获取文档列表信息
-    public function getLister($param,$page)
+    public function getLister($param,$page,$keyword='')
     {
         $query = Article::find()->select('id,title,litpic,modtime,shownum')
             ->where(['ishidden'=>0]);
 
         // 对参数进行筛选
         $params = explode('-',$param);
+
+        // 关键字搜索
+        if(!empty($keyword)) $query->andWhere(['like','title',$keyword]);
 
         // 城市
         if($params[0] != 0) $query->andWhere(['finaldestid'=>$params[0]]);

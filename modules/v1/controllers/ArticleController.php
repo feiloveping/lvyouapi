@@ -45,7 +45,7 @@ class ArticleController extends DefaultController
             $recommend[$key]['litpic'] = $app_url . $item['litpic'];
         }
 
-        // 处理banner图片
+        // 处理BANNER图片
         $banner             =   Advertise::getArticleBanner();
         $banner['adsrc']    =   unserialize($banner['adsrc']);
         $banner['adname']   =   unserialize($banner['adname']);
@@ -70,13 +70,13 @@ class ArticleController extends DefaultController
         $request    =       \Yii::$app->request;
         $param      =       $request->get('param','0-0-0,0');
         $page       =       (int) $request->get('page',1);
-
+        $keyword    =       htmlentities(strip_tags($request->get('keyword',null)));
         // 对参数进行判断
         $params      =       explode('-',$param);
         if(count($params) !== 3) return ['code'=>403,'msg'=>'参数错误','data'=>''];
 
         // 获取列表
-        $article = Article::getLister($param,$page);
+        $article = Article::getLister($param,$page,$keyword);
         if(!$article){
             $article['article'] = [];
         }else{
@@ -105,19 +105,17 @@ class ArticleController extends DefaultController
         $typeid         =   \Yii::$app->params['typeid']['article'];
         $commentcount   =   Comment::getCommentCountByTypeId($typeid,$id)['count'];
         $data = [
-            'id'            =>      $article['id'],
-            'title'         =>      $article['title'],
-            'shownum'       =>      $article['shownum'],
-            'modtime'       =>      $article['modtime'],
-            'content'       =>      str_replace('/uploads/',$app_url . '/uploads/',$article['content']),
-            'commentcount'  =>    $commentcount,
+            'id'        =>      $article['id'],
+            'title'     =>      $article['title'],
+            'shownum'  =>      $article['shownum'],
+            'modtime'   =>      $article['modtime'],
+            'content'   =>      str_replace('/uploads/',$app_url . '/uploads/',$article['content']),
+            'commentcount'=>    $commentcount,
         ];
-
-        // 增加详情的链接 - webview处理
-        $api_url                =       \Yii::$app->params['api_url'];
-        $data['content_url']    =      $app_url . '/v1/detail?type=articledetail&id=' . $data['id'];
         return ['code'=>200,'data'=>$data,'msg'=>'ok'];
+
     }
+
 
     // 城市选择
     public function actionCity()
