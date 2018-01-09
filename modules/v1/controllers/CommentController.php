@@ -33,8 +33,7 @@ class CommentController extends DefaultController
             return ['code'=>403,'msg'=>'参数错误','data'=>''];
 
         $comment    =       Comment::getCommentByPageLevel($typeid,$articleid,$page);
-
-
+        
         if($comment){
             $app_url    =   \Yii::$app->params['app_url'];
 
@@ -47,16 +46,13 @@ class CommentController extends DefaultController
                 if($v['vr_headpic'])
                     $comment['commentlist'][$k]['headpic'] = $app_url . $v['vr_headpic'];
 
-                // 处理用户昵称
-                $v['nickname']? $comment['commentlist'][$k]['nickname'] =  $v['nickname'] : $comment['commentlist'][$k]['nickname'] =  $v['vr_nickname'];
+                // 处理用户昵称 - 若vr_headpic存在则为昵称
+                $v['vr_nickname']? $comment['commentlist'][$k]['nickname'] =  $v['vr_nickname'] : $comment['commentlist'][$k]['nickname'] =  $v['nickname'];
                 if(!$v['nickname'] && !$v['vr_nickname']) $comment['commentlist'][$k]['nickname'] = '匿名用户';
 
-                // 处理dockid 也就是用户是否恢复
-
-
+                // 处理dockid 也就是用户是否为回复
                 unset($comment['commentlist'][$k]['vr_headpic']);
                 unset($comment['commentlist'][$k]['vr_nickname']);
-
             }
 
             // 对null值进行处理 - 前段要求   `-`
@@ -79,15 +75,14 @@ class CommentController extends DefaultController
     // 添加评论
     public function actionAdd()
     {
-
         if(!$this->logsign) return ['code'=>401,'msg'=>'用户未登录','data'=>null];
-
         $request        =       \Yii::$app->request;
         $content        =       $request->post('content');
         $typeid         =       $request->post('typeid',0);
         $articleid      =       $request->post('id');
         $memberid       =       $this->mid;
-        $dockid            =    $request->post('replyid',0);
+        $is_anonymous   =       $request->post('is_anonymous',1);
+        $dockid         =       $request->post('replyid',0);
 
         if(!in_array($typeid,array_values($this->typeIdArr))
             || empty($content) || empty($articleid))
@@ -101,6 +96,8 @@ class CommentController extends DefaultController
             'dockid'    =>       (int)$dockid,
             'addtime'   =>       time(),
         ];
+        // 若是匿名登录 , 则默认昵称为昵称用户
+        if($is_anonymous) $data['vr_nickname'] = '匿名用户';
 
         $re =  \Yii::$app->db->createCommand()->insert(Comment::tableName(),$data)->execute();
 
