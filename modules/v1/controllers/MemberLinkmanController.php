@@ -42,7 +42,7 @@ class MemberLinkmanController extends DefaultController
         // 根据id来获取地址列表
         $linkman = MemberLinkman::getMemberLinkmanById($id);
         if(empty($linkman))
-            return ['code'=>404,'data'=>'','msg'=>'未找到数据'];
+            return ['code'=>404,'data'=>[],'msg'=>'未找到数据'];
         else
             return ['code'=>200,'data'=>$linkman,'msg'=>'ok'];
     }
@@ -62,6 +62,12 @@ class MemberLinkmanController extends DefaultController
         if (empty($data['linkman']) || empty($data['cardtype']) || empty($data['idcard'])
             || empty($data['sex']) )
             return ['code'=>4001,'data'=>'','msg'=>'参数不能为空'];
+
+        if($data['sex'] == 1)
+            $data['sex'] = '男';
+        else
+            $data['sex'] = '女';
+
         $card = \Yii::$app->params['linkmanCardType'];
 
         $cardname = $card[$data['cardtype' ] - 1]['cardtype'];
@@ -70,7 +76,7 @@ class MemberLinkmanController extends DefaultController
         switch ($data['cardtype'])
         {
             case 1 :
-                if(! FeiIdCard::validateIDCard($data['idcard'])) return ['code'=>4001,'data'=>'','msg'=>'身份证格式错误'];
+                if(! FeiIdCard::validateIDCard($data['idcard'])) return ['code'=>4001,'data'=>[],'msg'=>'身份证格式错误'];
                 break;
             case 2:
                 //验证护照
@@ -116,10 +122,16 @@ class MemberLinkmanController extends DefaultController
         $data = $request->post();
         if (empty($data['id']) || empty($data['linkman']) || empty($data['cardtype']) || empty($data['idcard']) || empty($data['sex'])   )
             return ['code'=>4001,'data'=>'','msg'=>'参数不能为空'];
+
+        if($data['sex'] == 1)
+            $data['sex'] = '男';
+        else
+            $data['sex'] = '女';
+
         $card = \Yii::$app->params['linkmanCardType'];
 
         $cardname = $card[$data['cardtype' ] - 1]['cardtype'];
-        $memberid = $this->member[1];
+        $memberid = $this->mid;
         $data['memberid'] = $memberid ;
         switch ($data['cardtype'])
         {

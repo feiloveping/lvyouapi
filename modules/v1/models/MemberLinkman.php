@@ -17,7 +17,7 @@ class MemberLinkman extends ActiveRecord
     public function getMemberLinkmanById($id)
     {
         return MemberLinkman::find()
-            ->select('id,linkman,mobile,idcard,cardtype')
+            ->select('id,linkman,mobile,idcard,cardtype,sex')
             ->where('memberid='.$id)
             ->asArray()->all();
     }
