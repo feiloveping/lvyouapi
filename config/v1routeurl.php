@@ -99,22 +99,22 @@ return [
     /*  ----------------------------------厕所模块--------------------------------------*/
     'GET v1/toilet-list/<page>'                   =>  'v1/toilet/toilet-list2',
     'GET v1/toilet-detail/<id>'                   =>  'v1/toilet/toilet-detail',
-    'GET v1/toilenear'                              =>  'v1/toilet/member-near-toilet',
+    'GET v1/toilenear'                              =>  'v1/toilet/member-near-toilet3',
     'GET v1/toiletgeo'                              =>  'v1/toilet/update-toilet',
 
 
     'GET v1/changehotel'                            =>   'v1/init-all/change-hotel-url',
     'GET v1/changenotes'                            =>   'v1/init-all/change-notes-url',
 
-    'GET test'                            =>   'v1/toilet/test',
-
-
     /* ------------------------------------评论--------------------------------------------*/
     'GET v1/commentlist/<typeid:\d+>/<id:\d+>/<page:\d+>' => 'v1/comment/comment-list',      // 评论列表
     'POST v1/commentadd'                                  => 'v1/comment/add',       // 评论列表
 
 
-    'GET v1/detail' => 'v1/resource/details',      // 评论列表
+    'GET v1/detail' => 'v1/resource/details',      // 攻略和内容的详情 - webview
+
+
+    //'GET v1/create-verify' => 'v1/resource/create-verify',      // 评论列表
 
 
 

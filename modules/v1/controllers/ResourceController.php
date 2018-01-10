@@ -9,6 +9,7 @@
 namespace app\modules\v1\controllers;
 
 
+use Gregwar\Captcha\CaptchaBuilder;
 use yii\web\Controller;
 
 class ResourceController extends Controller
@@ -18,6 +19,21 @@ class ResourceController extends Controller
     public function actionDetails()
     {
         return $this->render('detail');
+    }
+
+    // 生成验证码
+    public function actionCreateVerify()
+    {
+        header('Content-type: image/jpeg');
+        $builder = new CaptchaBuilder();
+        $builder->build();
+        header('Content-type:image/jpeg');
+        $builder->output();
+    }
+
+    public function actionTest()
+    {
+        return $this->render('test');
     }
 
 

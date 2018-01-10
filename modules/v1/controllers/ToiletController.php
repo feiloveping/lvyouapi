@@ -15,6 +15,7 @@ use app\modules\components\helpers\GeoHash;
 use app\modules\components\helpers\MyImg;
 use app\modules\v1\models\Toilet;
 
+use yii\helpers\ArrayHelper;
 use yii\rest\ActiveController;
 use yii\web\Response;
 
@@ -29,8 +30,6 @@ class ToiletController extends ActiveController
         $behaviors['contentNegotiator']['formats']['application/json'] = Response::FORMAT_JSON;
         return $behaviors;
     }
-
-
 
     // 获取web端首页的厕所列表
     public function actionToiletList()
@@ -168,22 +167,30 @@ class ToiletController extends ActiveController
             $distance = $geoHash->getDistance($lat,$lng,$val['lat'],$val['lng']);
             $allToilet[$key]['metre'] = $distance;
         }
-        $re = FeiArr::array_sort($allToilet,'metre');
+        $re = FeiArr::my_sort($allToilet,'metre');
         return $re;
     }
-
-
 
     // 首页厕所详情
     public function actionToiletDetail()
     {
         $id =   \Yii::$app->request->get('id');
-        $toilet =  Toilet::toiletDetail($id);
+
+        $cache      =       \Yii::$app->cache;
+        $key        =       'toilet:id:'.$id;
+
+        if($cache->exists($key))
+        {
+            $toilet =  Toilet::toiletDetail($id);
+            $cache->set($key,$toilet,5);
+        }else{
+            $toilet =   $cache->get($key);
+        }
+
         $app_url = \Yii::$app->params['app_url'];
         if(empty($toilet)) return ['code'=>404,'data'=>'','msg'=>'未找到数据'];
 
         $api_url = \Yii::$app->params['api_url'];
-
         // 处理图片
         $myImg = new MyImg();
         $litpic = $app_url . $toilet['litpic'];
@@ -210,7 +217,8 @@ class ToiletController extends ActiveController
         $geohashStr = substr($geoHash->encode($lat,$lng),0,4);
 
         $toilet = Toilet::getNearToilet($geohashStr);
-
+        if(empty($toilet))
+            return ['code'=>404,'data'=>'','msg'=>'未找到数据'];
         // 计算出距离
         foreach($toilet as $key=>$val)
         {
@@ -219,14 +227,12 @@ class ToiletController extends ActiveController
             //排序列
             $sortdistance[$key] = $distance;
         }
+
         array_multisort($sortdistance,SORT_ASC,$toilet);
 
         // 获取前十个
         $toilet =  array_slice($toilet,0,10);
-        if(empty($toilet))
-            return ['code'=>404,'data'=>'','msg'=>'未找到数据'];
-        else
-            return ['code'=>200,'data'=>$toilet,'msg'=>''];
+        return ['code'=>200,'data'=>$toilet,'msg'=>''];
 
     }
 
@@ -252,6 +258,33 @@ class ToiletController extends ActiveController
             return ['code'=>404,'data'=>'','msg'=>'未找到数据'];
         else
             return ['code'=>200,'data'=>$toilet,'msg'=>''];
+
+    }
+
+    // 或的离用户最近的距离的10个坐标 (geohash 并优化排序)
+    public function actionMemberNearToilet3()
+    {
+        $request= \Yii::$app->request;
+        $lng        =   (float) $request->get('lng',98.486097);
+        $lat        =   (float) $request->get('lat',25.041022);
+
+        // 计算出相对比较近的几个位置
+        $geoHash    =   new GeoHash();
+        $geohashStr = substr($geoHash->encode($lat,$lng),0,5);
+
+        $toilet = Toilet::getNearToilet($geohashStr);
+        if(empty($toilet))
+            return ['code'=>404,'data'=>'','msg'=>'未找到数据'];
+        // 计算出距离
+        foreach($toilet as $key=>$val)
+        {
+            $distance = $geoHash->getDistance($lat,$lng,$val['lat'],$val['lng']);
+            $toilet[$key]['metre'] = $distance;
+        }
+        ArrayHelper::multisort($toilet,'metre',SORT_ASC);
+        // 获取前十个
+        $toilet =  array_slice($toilet,0,10);
+        return ['code'=>200,'data'=>$toilet,'msg'=>''];
 
     }
 
