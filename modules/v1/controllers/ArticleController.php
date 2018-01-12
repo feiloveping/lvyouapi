@@ -13,6 +13,7 @@ use app\modules\v1\models\Article;
 use app\modules\v1\models\ArticleAttr;
 use app\modules\v1\models\Comment;
 use app\modules\v1\models\Destinations;
+use function foo\func;
 
 class ArticleController extends DefaultController
 {
@@ -117,7 +118,15 @@ class ArticleController extends DefaultController
     // 城市选择
     public function actionCity()
     {
-        $city = Destinations::getTengchongCity();
+        //$city = Destinations::getTengchongCity();
+        $cache = \Yii::$app->cache;
+        $key    =   'article_city';
+
+        // 保存并设置
+        $city = $cache->getOrSet($key,function (){
+            return Destinations::getTengchongCity();
+        },3600);
+
         array_unshift($city,['id'=>0,'kindname'=>'全城','pinyin'=>'quancheng']);
         return $city;
     }

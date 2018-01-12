@@ -14,7 +14,6 @@ use app\modules\v1\models\Collection;
 use app\modules\v1\models\Icon;
 use app\modules\v1\models\Member;
 use app\modules\v1\models\Suggest;
-use Gregwar\Captcha\CaptchaBuilder;
 
 class UserCenterController extends DefaultController
 {
@@ -50,14 +49,16 @@ class UserCenterController extends DefaultController
         if($typeid != 0 )
             $collection = Collection::getListByTypeid($typeid,$page,$memberid);         // 根据id获取不同的数据
         else
-            $collection = Collection::getListBytyAll($memberid,$page);                  // 根据数据获取详细的内容
+            $collection = Collection::getListByTypeAll($memberid,$page);                // 根据数据获取详细的内容
 
         if(!$collection) return ['code'=>404,'data'=>'','msg'=>'未找到数据'];
+
+
         $app_url        =       \Yii::$app->params['app_url'];
         $typeid_init    =       \Yii::$app->params['typeid'];
         $typeid_init    =       array_flip($typeid_init);
-
         $typename_id    =       $typeid;
+
         // 对获得的数据处理图片和iconlist
         foreach ($collection as $k=>$v)
         {
@@ -273,17 +274,5 @@ class UserCenterController extends DefaultController
             return ['code'=>403,'msg'=>'添加失败','data'=>''];
 
     }
-
-
-
-
-    // 生成验证码
-    public function actionCreateVerify()
-    {
-        $builder = new CaptchaBuilder();
-        $builder->build();
-    }
-
-
 
 }

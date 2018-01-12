@@ -86,7 +86,10 @@ class SpotController extends DefaultController
         $param = $request->get('param');
         $page = $request->get('page');
         $spot = Spot::spotList($param,$page,$keyword);
-        if(!$spot) return ['code'=>404,'data'=>null,'msg'=>'未找到数据'];
+        if(!$spot)
+        {
+            return ['code'=>200,'data'=>['spot'=>[],'pagecount'=>''],'msg'=>'未找到数据'];
+        }
         return ['code'=>200,'data'=>$spot,'msg'=>'ok'];
     }
 
@@ -96,6 +99,7 @@ class SpotController extends DefaultController
         $city       =       $this->runAction('spot-city');
         $condition  =       $this->runAction('spot-other-conditions');
         $screen     =       $this->runAction('spot-screen-condition');
+
         $data       =       [
             'city'  =>      $city,
             'condition' =>  $condition,
@@ -109,7 +113,7 @@ class SpotController extends DefaultController
     public function actionSpotCity()
     {
         $spotcity = Destinations::getTengchongCity();
-        array_unshift($spotcity,['id'=>0,'kindname'=>'全城','pinyin'=>'allcity']);
+        array_unshift($spotcity,['id'=>'0','kindname'=>'全城','pinyin'=>'allcity']);
         return $spotcity ;
     }
 
@@ -139,7 +143,7 @@ class SpotController extends DefaultController
                 ];
             }else{
                 $price[$k] = [
-                    'id'        =>  $v['id'],
+                    'id'        =>  (string) $v['id'],
                     'attrname'  =>  '¥'.$v['min'] . '以上',
                     'pid'       =>  'p',
                 ];
@@ -162,14 +166,12 @@ class SpotController extends DefaultController
         // 对每个景区的属性增加全部
         foreach ($attr as $k=>$v)
         {
-            array_unshift($attr[$k]['son'],['id'=>0,'attrname'=>'全部','pid'=>$v['id']]);
+            array_unshift($attr[$k]['son'],['id'=>'0','attrname'=>'全部','pid'=>$v['id']]);
             $condition[] = $v;
-
         }
 
         // 增加全部全部
-        array_unshift($condition,['id'=>0,'attrname'=>'全部','pid'=>0,'son'=>[['id'=>0,'attrname'=>'全部','pid'=>0]]]);
-
+        array_unshift($condition,['id'=>'0','attrname'=>'全部','pid'=>'0','son'=>[['id'=>'0','attrname'=>'全部','pid'=>'0']]]);
         return      $condition;
     }
 

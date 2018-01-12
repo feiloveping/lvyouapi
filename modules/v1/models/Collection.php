@@ -73,7 +73,7 @@ class Collection extends ActiveRecord
     }
 
     // 收藏列表 - 先获得分页数据的再循环联查
-    public function getListBytyAll($memberid,$page)
+    public function getListByTypeAll($memberid,$page)
     {
         $query      =       Collection::find()->alias('c')
             ->select('c.id,c.typeid,c.indexid')
@@ -89,30 +89,53 @@ class Collection extends ActiveRecord
             ->limit($pages->limit)
             ->asArray()
             ->all();
-        // 重组数据
+        // 重组数据 - 若找不到相关的收藏,则删除收藏数据
         $collection = [];
         foreach ($collectionArr as $k=>$v)
         {
-
             switch ($v['typeid'])
             {
                 case 1:
-                    $query->leftJoin(Hotel::tableName() . 'as p','c.indexid=p.id' );    // 现在还未写,后面实现
+                    //$query->leftJoin(Hotel::tableName() . 'as p','c.indexid=p.id' );    // 现在还未写,后面实现
                     break;
                 case 2:
-                    $collection[$k] = Hotel::collectionMessage($v['indexid']);
-                    $collection[$k]['typeid']   =  2;
+                    $collectiobDetail = Hotel::collectionMessage($v['indexid']);;
+                    if(empty($collectiobDetail))
+                    {
+                        self::delCollectionByids($v['id']);
+                        unset($collectionArr[$k]);
+                    }else{
+                        $collection[$k] = $collectiobDetail;
+                        $collection[$k]['typeid']   =  2;
+                    }
+
                     break;
                 case 5:
-                    $collection[$k] = Spot::collectionMessage($v['indexid']);
-                    $collection[$k]['typeid']   =  5;
+                    $collectiobDetail = Spot::collectionMessage($v['indexid']);;
+                    if(empty($collectiobDetail))
+                    {
+                        self::delCollectionByids($v['id']);
+                        unset($collectionArr[$k]);
+                    }else{
+                        $collection[$k] = $collectiobDetail;
+                        $collection[$k]['typeid']   =  5;
+                    }
+                    break;
+
                 case 14:
-                    $collection[$k] = Tuan::collectionMessage($v['indexid']);
-                    $collection[$k]['typeid']   =  14;
+                    $collectiobDetail = Tuan::collectionMessage($v['indexid']);;
+                    if(empty($collectiobDetail))
+                    {
+                        self::delCollectionByids($v['id']);
+                        unset($collectionArr[$k]);
+                    }else{
+                        $collection[$k] = $collectiobDetail;
+                        $collection[$k]['typeid']   =  14;
+                    }
+                    break;
             }
 
             $collection[$k]['id']   =  $v['id'];
-
         }
         return $collection ;
     }

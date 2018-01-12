@@ -62,10 +62,11 @@ class SpotTicket extends ActiveRecord
     // 根据景点id获得 套餐信息
     public function getTicketsBySpotId($id)
     {
-        return  SpotTicket::find()->where(['spotid'=>$id])->select(['id','title','sellprice'])->asArray()->all();
+        return  SpotTicket::find()
+            ->alias('st')
+            ->select(['st.id','st.title','st.sellprice','tt.kindname'])
+            ->where(['st.spotid'=>$id])
+            ->leftJoin(SpotTicketType::tableName() . ' tt' ,'st.tickettypeid=tt.id' )
+            ->asArray()->all();
     }
-
-
-
-
 }

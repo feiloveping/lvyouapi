@@ -55,5 +55,32 @@ class DefaultController extends ActiveController
         return MyEncrypt::passport_decrypt($this->token,$this->key);
     }
 
+    // 插入10000调数据
+    public function actionInsert()
+    {
+        set_time_limit(0);
+        $start = time();
+
+        $str = '1234567890qwertyuiopasdfghjklzxcvbnm45678rtyuiofghjkcvbnmrtyufghj';
+
+
+        $name = '张鹏飞';
+        for ($i=0;$i<10000;$i++)
+        {
+            for ($j=0;$j<500;$j++)
+            {
+                $data[] = [
+                    'name'=> $str[rand(0,64)].$str[rand(0,64)].$str[rand(0,64)].$str[rand(0,64)].$name . $i . $j,
+                    'age'=>rand(10,30)
+                ];
+            }
+
+            \Yii::$app->db->createCommand()->batchInsert('pagetest',['name','age'],$data)->execute();
+        }
+
+        echo time()-$start;
+    }
+
+
 
 }

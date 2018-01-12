@@ -179,12 +179,12 @@ class ToiletController extends ActiveController
         $cache      =       \Yii::$app->cache;
         $key        =       'toilet:id:'.$id;
 
-        if($cache->exists($key))
+        if(!$cache->get($key))
         {
             $toilet =  Toilet::toiletDetail($id);
-            $cache->set($key,$toilet,5);
-        }else{
-            $toilet =   $cache->get($key);
+            $cache->set($key,$toilet,3600);
+        }else {
+            $toilet = $cache->get($key);
         }
 
         $app_url = \Yii::$app->params['app_url'];

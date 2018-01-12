@@ -29,7 +29,7 @@ class SpotOrderController extends DefaultController
 
     }
 
-    // 根据景区id获取景区的门票和简单时间表
+    // 根据景区id获取景区的门票和简单时间表 - 拼接上具体的门票类型
     public function actionGetSpotOrderMessage()
     {
         $spotid = \Yii::$app->request->get('id');
@@ -37,8 +37,12 @@ class SpotOrderController extends DefaultController
         if(empty($ticketmessage))
             return ['code'=>404,'data'=>'','msg'=>'景点门票信息没找到'];
 
+
         foreach ($ticketmessage as $k=>$v)
         {
+            // 拼接上套餐字段
+            $ticketmessage[$k]['packagename'] = $v['title'] . '(' . $v['kindname']  .')';
+
            $time = SpotTicketPrice::getTicketTimeByTid($v['id']);
             $times = [];
             $nowtime = strtotime(date('Y-m-d',time()));
@@ -68,7 +72,6 @@ class SpotOrderController extends DefaultController
         else
             return ['code'=>404,'data'=>'','msg'=>'景点门票信息没找到'];
     }
-
 
     /*
      * @params
@@ -130,15 +133,13 @@ class SpotOrderController extends DefaultController
         $data['marketprice']    = $ticket['adultmarketprice'];
 
         // 对联系人进行初步处理(联系人以json形式传递id)
-        $tourer = json_decode($result['tourer']);
+        $tourer = $result['tourer'];
         if(count($tourer) != $data['dingnum'])  return ['code'=>4001,'data'=>'','msg'=>'请选择游客信息'];
 
         // 根据条件查到所有的游客信息
         $linkmans = MemberLinkman::getLinkmanByIds($tourer);
         if(empty($linkmans)) return ['code'=>4002,'data'=>'','msg'=>'游客信息错误'];
 
-        // 生成订单操作  - 订单状态直接为等待确认状态
-        $data['status'] = 1;
         // 后期增加积分策略
         $data['needjifen'] = 0;
         // 生成订单操作
@@ -148,12 +149,12 @@ class SpotOrderController extends DefaultController
         foreach ($linkmans as $k=>$v)
         {
             $linkmans[$k] = [
-                'orderid'=>$orderid,
-                'tourername'=>$v['linkman'],
-                'sex'=>$v['sex'],
-                'cardtype'=>$v['cardtype'],
-                'cardnumber'=>$v['idcard'],
-                'mobile'=>$v['mobile']
+                'orderid'       =>  $orderid,
+                'tourername'    =>  $v['linkman'],
+                'sex'           =>  $v['sex'],
+                'cardtype'      =>  $v['cardtype'],
+                'cardnumber'    =>  $v['idcard'],
+                'mobile'        =>  $v['mobile']
             ] ;
         }
         // 增加游客地址记录

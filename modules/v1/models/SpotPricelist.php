@@ -31,7 +31,7 @@ class SpotPricelist extends ActiveRecord
         $priceMax = end($price) ;
         array_push($price , ['id'=>$priceMax['id'] + 1,'min'=>$priceMax['max'] + 1 , 'max'=>null]);
         // 增加 0 - 0
-        array_unshift($price,['id'=>0,'min'=>'全部','max'=>'全部']);
+        array_unshift($price,['id'=>'0','min'=>'全部','max'=>'全部']);
         return $price;
     }
 

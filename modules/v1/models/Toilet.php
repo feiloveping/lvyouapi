@@ -28,10 +28,12 @@ class Toilet extends ActiveRecord
         $pages->page = $page -1 ;
         $toilet['pagecount']    =   $pagecount;
         if($page > $pagecount) return false;
+
         $toilet['toilet'] = $models = $query->offset($pages->offset)
             ->limit($pages->limit)
             ->asArray()
             ->all();
+
         return $toilet;
 
     }

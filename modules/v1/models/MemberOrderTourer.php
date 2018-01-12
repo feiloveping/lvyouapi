@@ -13,5 +13,12 @@ use yii\db\ActiveRecord;
 
 class MemberOrderTourer extends ActiveRecord
 {
-
+    public function getTourByOrderId($id)
+    {
+        return MemberOrderTourer::find()
+            ->select('id,tourername,cardtype,cardnumber')
+            ->where(['orderid'=>$id])
+            ->asArray()
+            ->all();
+    }
 }

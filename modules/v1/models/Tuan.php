@@ -40,4 +40,18 @@ class Tuan extends ActiveRecord
             ->where('id='.$id)
             ->asArray()->one();
     }
+
+
+    //根据id选择简单的几个数据
+    public function tuanEasyDetail($id)
+    {
+        $tuan      =       Tuan::find()
+            ->select('id,aid,supplierlist,title')
+            ->where('id=' . $id )
+            ->asArray()
+            ->one();
+        return $tuan;
+    }
+
+
 }
