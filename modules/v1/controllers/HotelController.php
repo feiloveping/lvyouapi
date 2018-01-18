@@ -2,6 +2,7 @@
 
 namespace app\modules\v1\controllers;
 
+use app\modules\v1\models\Advertise;
 use app\modules\v1\models\Collection;
 use app\modules\v1\models\Comment;
 use app\modules\v1\models\Destinations;
@@ -81,15 +82,6 @@ class HotelController extends DefaultController
         array_unshift($price,['id'=>0,'min'=>null,'max'=> null]);
         $star = HotelRank::getRank();
         array_unshift($star,['id'=>0,'hotelrank'=>'不限']);
-        // 對price和start進行分開處理
-//        foreach ($price as $k=>$v)
-//        {
-//            $price[$k]['id'] = '0,' . $v['id'];
-//        }
-//        foreach ($star as $k=>$v)
-//        {
-//            $star[$k]['id'] = '1,' . $v['id'];
-//        }
         return ['price'=>$price,'star'=>$star];
     }
 
@@ -136,7 +128,7 @@ class HotelController extends DefaultController
         }
 
         // 统计评价
-        $hotel['commentnum'] = Comment::getCommentCountByTypeId(2 , $id)['count'];
+        $hotel['commentnum'] = Comment::getCommentCountByTypeId(2 , $id);
 
         // 对酒店的房间做统计
         $room      =  HotelRoom::getRoomById($id) ;
@@ -199,6 +191,23 @@ class HotelController extends DefaultController
         $re = \Yii::$app->runAction('v1/collection/del-collection',array('typeid'=>$typeid,'indexid'=>$id,'mid'=>$mid));
         if($re) return ['code'=>200,'msg'=>'ok','data'=>''];
         else  return ['code'=>400,'msg'=>'用户还未收藏','data'=>''];
+    }
+
+    // 景点主搜索bannner图
+    public function actionBanner()
+    {
+        $app_url            = \Yii::$app->params['app_url'];
+        $banner             = Advertise::getHotelBanner();
+
+        if(empty($banner)) return  ['code'=>404,'msg'=>'信息未找到','data'=>null];
+        $banner['adsrc']    = unserialize($banner['adsrc']);
+        $banner['adlink']    = unserialize($banner['adlink']);
+        $banner['adname']    = unserialize($banner['adname']);
+        foreach ($banner['adsrc'] as $k=>$v)
+        {
+            $banner['adsrc'][$k] = $app_url . $v;
+        }
+        return ['code'=>200,'msg'=>'ok','data'=>$banner];
     }
 
     // 景点图集列表
@@ -267,9 +276,6 @@ class HotelController extends DefaultController
         }
         $data       =       ['comment'=>$commentLister,'pagecount'=>$commentPageCount];
         return ['code'=>200,'data'=>$data,'msg'=>'ok'];
-        $comment['comment']     =       $commentLister;
-
-        return $comment;
     }
 
     // 点评上部信息总计
@@ -281,7 +287,7 @@ class HotelController extends DefaultController
         $hotelid                =       $request->get('id');
         $commentArr             =       $commentObj->getCommentStarCount($typeid,$hotelid);
         $commentCount           =       $commentObj->getLevelComment($commentArr);
-        $commentCount['count']  =       $commentObj->getCommentCountByTypeId($typeid,$hotelid)['count'];
+        $commentCount['count']  =       $commentObj->getCommentCountByTypeId($typeid,$hotelid);
         $commentCount['imgcount']=      $commentObj->getCommentHasImg($typeid,$hotelid);
         return ['code'=>200,'data'=> $commentCount,'msg'=>'ok'];
     }

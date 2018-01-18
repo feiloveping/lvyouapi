@@ -8,17 +8,16 @@
 
 namespace app\modules\components\helpers;
 
-
 class FeiArr
 {
-    function array_sort($arr,$keys,$type='asc'){
+    public function array_sort($arr,$keys,$type='asc'){
         $keysvalue = $new_array = array();
         foreach ($arr as $k=>$v){
             $keysvalue[$k] = $v[$keys];
         }
         if($type == 'asc'){
             asort($keysvalue);
-        }else{
+        }elseif($type == 'desc'){
             arsort($keysvalue);
         }
         reset($keysvalue);
@@ -29,7 +28,7 @@ class FeiArr
     }
 
 
-    function my_sort($arrays,$sort_key,$sort_order=SORT_ASC,$sort_type=SORT_NUMERIC ){
+    public function my_sort($arrays,$sort_key,$sort_order=SORT_ASC,$sort_type=SORT_NUMERIC ){
         if(is_array($arrays)){
             foreach ($arrays as $array){
                 if(is_array($array)){
@@ -43,5 +42,26 @@ class FeiArr
         }
         array_multisort($key_arrays,$sort_order,$sort_type,$arrays);
         return $arrays;
+    }
+
+    public function pageArr($arr,$page,$pagesize=6)
+    {
+        $page = (int)$page;
+        $pagesize = (int)$pagesize;
+        $pagecount = ceil(count($arr) / $pagesize);
+        if($page<1) $page = 1;
+        if($page > $pagecount) $page = $pagecount;
+        $offset = $pagesize * ($page - 1 );
+        if($page < $pagecount)
+        {
+            $limit = $pagesize;
+        }else{
+            $limit = count($arr) % $pagesize;
+        }
+        $data = array_slice($arr,$offset ,$limit);
+        if(empty($data))
+            return false;
+        else
+            return ['pagecount'=>$pagecount,'data'=>$data];
     }
 }

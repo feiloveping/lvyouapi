@@ -80,8 +80,6 @@ class MemberOrder extends ActiveRecord
         return $order;
     }
 
-
-
     // 根据订单id统一计算订单总金额
     public function totalCount($id)
     {
@@ -114,7 +112,7 @@ class MemberOrder extends ActiveRecord
     {
         $order = MemberOrder::find()
             ->select('id,ordersn,typeid,price,productautoid,productname,addtime,status,memberid,
-            dingnum,usedate,departdate,linkman,linktel,remark')
+            ispinlun as ispinglun,dingnum,usedate,departdate,linkman,linktel,remark')
             ->where(['id'=>$id])
             ->asArray()
             ->one();
@@ -141,6 +139,7 @@ class MemberOrder extends ActiveRecord
 
 
     }
+
 
 
 }

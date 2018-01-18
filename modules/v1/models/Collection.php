@@ -72,6 +72,38 @@ class Collection extends ActiveRecord
 
     }
 
+    // 根据typeid 获取当前总量
+    public function getCountByTypeid($typeid,$memberid)
+    {
+        $query      =       Collection::find()->alias('c')
+            ->select('c.id,c.indexid,c.typeid,
+            p.litpic,p.satisfyscore,p.bookcount,p.title,p.price,p.iconlist')
+            ->where(['c.memberid'=>$memberid]);
+        // 对 $typeid = 0 单独处理 ,即获得全部的
+        if($typeid != 0 ) $query->andWhere(['c.typeid'=>$typeid]);
+
+        switch ((int)$typeid)
+        {
+            case 1:
+                $query->InnerJoin(Hotel::tableName() . 'as p','c.indexid=p.id' );    // 现在还未写,后面实现
+                break;
+            case 2:
+                $query->InnerJoin(Hotel::tableName() . 'as p','c.indexid=p.id' );
+                break;
+            case 5:
+                $query->InnerJoin(Spot::tableName() . 'as p','c.indexid=p.id');
+                break;
+            case 14:
+                $query->InnerJoin(Tuan::tableName() . 'as p','c.indexid=p.id');
+                break;
+        }
+
+        $totalCount = $query->count();
+        return $totalCount;
+
+    }
+
+
     // 收藏列表 - 先获得分页数据的再循环联查
     public function getListByTypeAll($memberid,$page)
     {

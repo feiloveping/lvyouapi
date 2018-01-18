@@ -9,6 +9,7 @@
 namespace app\modules\v1\controllers;
 
 
+use app\modules\components\helpers\FeiValidate;
 use app\modules\components\helpers\MyDateFormat;
 use app\modules\v1\models\MemberLinkman;
 use app\modules\v1\models\MemberOrderTourer;
@@ -46,6 +47,8 @@ class SpotOrderController extends DefaultController
            $time = SpotTicketPrice::getTicketTimeByTid($v['id']);
             $times = [];
             $nowtime = strtotime(date('Y-m-d',time()));
+
+            // 获取前两天的数据
             // 对过期门票进行过滤 - 选择前两天的数据(若想要全部数据则不进行处理)
             foreach ($time as $k2=>$v2)
             {
@@ -54,6 +57,36 @@ class SpotOrderController extends DefaultController
                     if(count($times) > 1 ) break ;
                 }
             }
+
+            // 对当前门票进行日期过滤 , 若这两天无数据.则进行置空 (前段要求)
+            $tomorrow = $nowtime + 86400;
+            if($times[0]['day'] != $nowtime)
+                $times[0] = [
+                    "day"=> $nowtime,
+                    "adultprice"=> "",
+                    "number"=> "0",
+                    "mydays"=> date('Y-m-d',$nowtime) ,
+                ];
+
+            if($times[0]['day'] == $tomorrow){
+                $times[1] = $times[0];
+                $times[0] = [
+                    "day"=> $nowtime,
+                    "adultprice"=> "",
+                    "number"=> "0",
+                    "mydays"=> date('Y-m-d',$nowtime) ,
+                ];
+            }
+
+            if($times[1]['day'] != $tomorrow)
+                $times[1] = [
+                    "day"=> $tomorrow,
+                    "adultprice"=> "",
+                    "number"=> "0",
+                    "mydays"=> date('Y-m-d',$tomorrow) ,
+                ];
+
+
             $ticketmessage[$k]['timelist'] = $times ;
         }
         return ['code'=>200,'data'=>$ticketmessage,'msg'=>'ok'];
@@ -105,6 +138,10 @@ class SpotOrderController extends DefaultController
         if(  empty($data['suitid']) || empty($data['usedate']) || empty($data['linkman']) ||
             empty($data['linktel']) || empty($data['dingnum']))
             return ['code'=>400,'data'=>'','msg'=>'参数不能为空'];
+
+        // 验证手机号
+        if(!FeiValidate::isMobile($data['linktel']))
+            return ['code'=>4001,'data'=>null,'msg'=>'手机号格式不正确'];
 
         // 根据门票id查询景点id
         $spotid                 =   SpotTicket::getDesByTicketId($data['suitid'])['spotid'];

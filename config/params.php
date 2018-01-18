@@ -8,11 +8,11 @@ return [
     'api_url'=>'https://youapi.wmqt.net',
     'page_size'=>6,
     'spot_condition_other'=>[
-        ['id'=>0,'name'=>'综合排序'],
-        ['id'=>1,'name'=>'人气优先'],
-        ['id'=>2,'name'=>'低价优先'],
-        ['id'=>3,'name'=>'高价优先'],
-        ['id'=>4,'name'=>'销量优先'],
+        ['id'=>'0','name'=>'综合排序'],
+        ['id'=>'1','name'=>'人气优先'],
+        ['id'=>'2','name'=>'低价优先'],
+        ['id'=>'3','name'=>'高价优先'],
+        ['id'=>'4','name'=>'销量优先'],
     ],
     'article_condition_other'=>[
         ['id'=>0,'ordername'=>'综合排序'],

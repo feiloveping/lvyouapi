@@ -276,4 +276,45 @@ class TengchongOrders
         return json_encode($result);
     }
 
+
+    /*
+ * 获取编号
+     * 线路  prefix 01
+ * */
+    //获取编号,共6位,不足6位前面被0
+    public static function getSeries($id, $prefix)
+    {
+        $ar = array(
+            '01' => 'A',
+            '02' => 'B',
+            '05' => 'C',
+            '03' => 'D',
+            '08' => 'E',
+            '13' => 'G',
+            '14' => 'H',
+            '15' => 'I',
+            '16' => 'J',
+            '17' => 'K',
+            '18' => 'L',
+            '19' => 'M',
+            '20' => 'N',
+            '21' => 'O',
+            '22' => 'P',
+            '23' => 'Q',
+            '24' => 'R',
+            '25' => 'S',
+            '26' => 'T'
+        );
+        $prefix = $ar[$prefix];
+        $len = strlen($id);
+        $needlen = 4 - $len;
+        if ($needlen == 3)
+            $s = '000';
+        else if ($needlen == 2)
+            $s = '00';
+        else if ($needlen == 1)
+            $s = '0';
+        $out = $prefix . $s . "{$id}";
+        return $out;
+    }
 }

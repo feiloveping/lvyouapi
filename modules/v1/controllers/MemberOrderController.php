@@ -80,7 +80,7 @@ class MemberOrderController extends DefaultController
 
         // 判断列表是否为空
         if (empty($lister))
-            return ['code' => 200, 'data' => ['order' => [], 'pagecount' => ''], 'msg' => '数据为空'];
+            return ['code' => 200, 'data' => ['order' => [], 'pagecount' => 0], 'msg' => '数据为空'];
 
         // 计算出每个订单的总价 - 整理自己需要的数据
         $order = [];
@@ -108,7 +108,8 @@ class MemberOrderController extends DefaultController
         $orderId = $request->get('id', null);
         $memberObi = new MemberOrder();
         $order = $memberObi->getDetail($orderId);
-
+        $statusDetail= TongyongOrderStatus::getStatusDetail($order['status']);
+        $order['statusname'] = $statusDetail['status_name'];
         if(empty($order)) return ['code'=>404,'msg'=>'信息未找到','data'=>[]];
 
         $order['totalcount'] = $memberObi->totalCount($orderId);
@@ -137,9 +138,9 @@ class MemberOrderController extends DefaultController
         $order->status = 3;
         $re = $order->save();
         if($re)
-            return ['code' => 200, 'msg' => 'ok', 'data' =>[]];
+            return ['code' => 200, 'msg' => '订单取消成功', 'data' =>''];
         else
-            return ['code'=>404 , 'msg'=>'取消失败','data'=>[]];
+            return ['code'=>404 , 'msg'=>'取消失败','data'=>''];
 
     }
 
@@ -159,7 +160,7 @@ class MemberOrderController extends DefaultController
 
          // 判断列表是否为空
          if (empty($lister))
-             return ['code' => 200, 'data' => ['order' => [], 'pagecount' => ''], 'msg' => '数据为空'];
+             return ['code' => 200, 'data' => ['order' => [], 'pagecount' => 1], 'msg' => '数据为空'];
 
          // 计算出每个订单的总价 - 整理自己需要的数据
          $order = [];
@@ -176,6 +177,22 @@ class MemberOrderController extends DefaultController
          $data = ['order' => $order, 'pagecount' => $lister['pagecount']];
          return ['code' => 200, 'data' => $data, 'msg' => 'ok'];
      }
+
+     // 再次预定
+    public function actionReOrder()
+    {
+        $request        =       \Yii::$app->request;
+        $id             =       $request->get('id','');
+        if(!$id)    return ['code'=>'403','msg'=>'参数错误','data'=>null];
+
+        // 根据订单id获得详情
+        $order = MemberOrder::getDetail($id);
+        $data       =       [
+            'typeid'        =>       $order['typeid'],
+            'id'            =>       $order['productautoid'],
+        ];
+        return ['code'=>200,'msg'=>'ok','data'=>$data];
+    }
 
 
 

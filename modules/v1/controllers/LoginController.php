@@ -82,7 +82,7 @@ class LoginController extends DefaultController
                 break;
             case 2:
                 $msgtype = 'reg_findpwd' ;
-                if($Member) return ['code'=>4002,'data'=>'','msg'=>'用户号未注册'];
+                if(!$Member) return ['code'=>4002,'data'=>'','msg'=>'用户号未注册'];
                 break;
         }
         return \Yii::$app->runAction('v1/message/send-verify-message',['mobile'=>$mobile,'msgtype'=>$msgtype,'ip'=>$ip]);
@@ -95,11 +95,12 @@ class LoginController extends DefaultController
         $verify = $request->post('verify',1);
         return \Yii::$app->runAction('v1/message/check-verify-message',['mobile'=>$mobile,'verify'=>$verify]);
     }
+
     public function actionRegister()
     {
         $request = \Yii::$app->request;
         $redis = \Yii::$app->redis;
-        $mobile = (int) $request->post('mobile');
+        $mobile =  $request->post('mobile');
         $password = $request->post('password');
         $verify = $request->post('verify' , 1);
         // 对验证码再次验证 - 隐含
@@ -119,10 +120,16 @@ class LoginController extends DefaultController
             'regtype'=>0
         ];
         $re = \Yii::$app->db->createCommand()->insert(Member::tableName(),$data)->execute();
+
         if(! $re)
             return ['code'=>403,'data'=>'','msg'=>'注册失败'] ;
-        else
-            return ['code'=>200,'data'=>'','msg'=>'ok'] ;
+        else{
+            // 生成token并返回
+            $where  =   ['mobile'=>$mobile];
+            $member    =   Member::getMember($where);
+            $token = FeiToken::createToken($member['mid'],\Yii::$app->params['myEncrypt_key']);
+            return ['code'=>200,'data'=>['token'=>$token],'msg'=>'ok'] ;
+        }
     }
 
     // 提交修改的密码

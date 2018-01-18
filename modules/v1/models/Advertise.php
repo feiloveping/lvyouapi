@@ -28,6 +28,18 @@ class Advertise extends ActiveRecord
             ->asArray()->one();
     }
 
+
+    public function getHotelBanner()
+    {
+        return Advertise::find()
+            ->select('id,adsrc,adlink,adname')
+            ->where("prefix='hotel_index' and is_show='1' and is_pc='0'")
+            ->orderBy('modtime desc')
+            ->limit(1)
+            ->asArray()->one();
+    }
+
+
     public function getIndexBanner()
     {
         return Advertise::find()

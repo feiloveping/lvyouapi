@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "8fb808b4394195192d6f4cbb1e7e04da",
+    "content-hash": "948b921773a7a7ca6d3f887614c9bb8b",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -90,7 +90,7 @@
             "version": "2.0.7.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/yiisoft/jquery-pjax.git",
+                "url": "git@github.com:yiisoft/jquery-pjax.git",
                 "reference": "aef7b953107264f00234902a3880eb50dafc48be"
             },
             "dist": {
@@ -365,6 +365,57 @@
                 "yii2"
             ],
             "time": "2017-11-14T05:11:33+00:00"
+        },
+        {
+            "name": "linslin/yii2-curl",
+            "version": "1.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/linslin/Yii2-Curl.git",
+                "reference": "492ffc03e78458357210d692f36a0cd74a888825"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://files.phpcomposer.com/files/linslin/Yii2-Curl/492ffc03e78458357210d692f36a0cd74a888825.zip",
+                "reference": "492ffc03e78458357210d692f36a0cd74a888825",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "yiisoft/yii2": "*"
+            },
+            "require-dev": {
+                "codeception/base": "^2.2.3",
+                "codeception/specify": "~0.4.3",
+                "codeception/verify": "~0.3.1",
+                "codeclimate/php-test-reporter": "dev-master",
+                "guzzlehttp/guzzle": ">=4.1.4 <7.0",
+                "mcustiel/phiremock-codeception-extension": "1.2.4"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "linslin\\yii2\\curl\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nils Gajsek",
+                    "email": "info@linslin.org"
+                }
+            ],
+            "description": "Easy and nice cURL extension with RESTful support for Yii2",
+            "keywords": [
+                " curl",
+                "extension",
+                "restful",
+                "yii2"
+            ],
+            "time": "2017-10-23T07:43:10+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",

@@ -196,5 +196,16 @@ class Spot extends ActiveRecord
             ->asArray()->one();
     }
 
+    // 获得所有的景点
+    public function getAll()
+    {
+        return Spot::find()
+            ->select(['id','title','satisfyscore','bookcount','price','litpic','iconlist','lng','lat'])
+            ->where(['ishidden'=>0])
+            ->asArray()
+            ->all();
+    }
+
+
 
 }

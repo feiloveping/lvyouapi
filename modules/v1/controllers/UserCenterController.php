@@ -33,7 +33,18 @@ class UserCenterController extends DefaultController
     public function actionMyCollectionHead()
     {
         $typename = \Yii::$app->params['typeNameforMemberCenter'];
-        $one      = ['id'=>0,'typename'=>'全部'];
+        $mid = $this->mid;
+        // 根据分类的id获取所有收藏的总数
+        $count = 0;
+        foreach ($typename as $k=>$v)
+        {
+            $typecount = Collection::getCountByTypeid($v['id'],$mid);
+            $typename[$k]['count'] = $typecount;
+            $count += $typecount;
+        }
+
+        $one      = ['id'=>0,'typename'=>'全部','count'=>(string)$count];
+
         array_unshift($typename,$one);
         return ['code'=>200,'data'=>$typename,'msg'=>'ok'];
     }
@@ -91,7 +102,10 @@ class UserCenterController extends DefaultController
         // 两种方式 , 1 传字符串
         $ids        =   explode(',',trim($ids,','));
         $re = \Yii::$app->runAction('v1/collection/del-collection-byids',['ids'=>$ids]);
-        return ['code'=>200,'msg'=>'ok','data'=>''];
+        if($re)
+            return ['code'=>200,'msg'=>'ok','data'=>''];
+        else
+            return ['code'=>403,'msg'=>'删除失败','data'=>''];
     }
 
     //个人中心 - 获取用户的基本信息
@@ -128,28 +142,12 @@ class UserCenterController extends DefaultController
             if (empty($memberMessage)) return ['code'=>404,'data'=>'','msg'=>'用户未找到'];
             $app_url        =   \Yii::$app->params['app_url'];
             if(!empty($memberMessage['litpic']))
-                $data           = [
-                    'id'        =>      $mid,
-                    'nickname'  =>      $memberMessage['nickname'],
-                    'truename'  =>      $memberMessage['truename'],
-                    'birth_date'=>      $memberMessage['birth_date'],
-                    'sex'       =>      $memberMessage['sex'],
-                    'native_place'=>    $memberMessage['native_place'],
-                    'cardid'    =>      $memberMessage['cardid'],
-                    'address'   =>      $memberMessage['address'],
-                    'qq'        =>      $memberMessage['qq'],
-                    'wechat'    =>      $memberMessage['wechat'],
-                    'constellation'=>   $memberMessage['constellation'],
-                    'signature' =>      $memberMessage['signature'],
-                ];
-            return ['code'=>200,'data'=>$data,'msg'=>'ok'];
-        }elseif($request->isPost)
-        {
-            $memberMessage  = $request->post();
+                $memberMessage['litpic'] = $app_url . $memberMessage['litpic'] ;
             $data           = [
+                'id'        =>      $mid,
                 'nickname'  =>      $memberMessage['nickname'],
                 'truename'  =>      $memberMessage['truename'],
-                'birth_date'  =>      $memberMessage['birth_date'],
+                'birth_date'=>      $memberMessage['birth_date'],
                 'sex'       =>      $memberMessage['sex'],
                 'native_place'=>    $memberMessage['native_place'],
                 'cardid'    =>      $memberMessage['cardid'],
@@ -158,12 +156,30 @@ class UserCenterController extends DefaultController
                 'wechat'    =>      $memberMessage['wechat'],
                 'constellation'=>   $memberMessage['constellation'],
                 'signature' =>      $memberMessage['signature'],
+                'litcpic'   =>      $memberMessage['litpic'],
+            ];
+            return ['code'=>200,'data'=>$data,'msg'=>'ok'];
+        }elseif($request->isPost)
+        {
+            $memberMessage  = $request->post();
+            $data           = [
+                'nickname'  =>      $memberMessage['nickname'],
+                'truename'  =>      $memberMessage['truename'],
+                'birth_date'=>      $memberMessage['birth_date'],
+                'sex'       =>      $memberMessage['sex'],
+                'native_place'=>    $memberMessage['native_place'],
+                'cardid'    =>      $memberMessage['cardid'],
+                'address'   =>      $memberMessage['address'],
             ];
             // 对信息进行是否为空判断
             foreach ($data as $k=>$v)
             {
                 if(empty($data[$k])) return ['code'=>404,'msg'=>$k . '不能为空','data'=>''];
             }
+            $data['signature']      = $memberMessage['signature'];
+            $data['qq']             = $memberMessage['qq'];
+            $data['wechat']         = $memberMessage['wechat'];
+            $data['constellation']  = $memberMessage['constellation'];
             Member::updateAll($data,['mid'=>$mid]);
             return ['code'=>200,'data'=>'','msg'=>'修改成功'];
         }
@@ -197,10 +213,10 @@ class UserCenterController extends DefaultController
         $mobile     =       $request->post('mobile',0);
 
         // 验证手机号格式
-        if(! FeiValidate::isMobile($mobile)) return ['code'=>401,'msg'=>'手机号格式错误','data'=>''];
+        if(! FeiValidate::isMobile($mobile)) return ['code'=>401,'msg'=>'手机号格式错误','data'=>null];
 
         // 验证改该手机号是否已被绑定
-        if(Member::hasMember(['mid'=>$mid,'mobile'=>$mobile])) return ['code'=>401,'msg'=>'改手机号已经被绑定','data'=>''];
+        if(Member::hasMember(['mid'=>$mid,'mobile'=>$mobile])) return ['code'=>401,'msg'=>'改手机号已经被绑定','data'=>null];
 
         // 发送短信验证码
         $msgtype = 'reg_findpwd';
@@ -216,14 +232,16 @@ class UserCenterController extends DefaultController
         $mobile         =       $request->post('mobile');
         $verify         =       $request->post('verify');
         $redis          =       \Yii::$app->redis;
-        // 对验证码再次验证 - 隐含
+
+        // 判断手机号和验证码是否为空
+        if (empty($mobile) || empty($verify)) return ['code'=>403,'data'=>null,'msg'=>'参数错误'] ;
         $redis_verify = $redis->get('sms:send:' . $mobile ) ;
-        if($verify != $redis_verify)   return ['code'=>400,'data'=>'','msg'=>'修改失败,请重新发送短信验证'] ;
+        if($verify != $redis_verify)   return ['code'=>400,'data'=>null,'msg'=>'修改失败,请重新发送短信验证'] ;
 
         // 修改用户信息
         Member::updateAll(['mobile'=>$mobile],['mid'=>$this->mid]);
 
-        return ['code'=>200,'data'=>'','msg'=>'修改成功,请重新登录'];
+        return ['code'=>200,'data'=>null,'msg'=>'修改成功,请重新登录'];
     }
 
     // 修改密码
@@ -233,6 +251,7 @@ class UserCenterController extends DefaultController
         $newpass    =   $request->post('newpass',1);
         $renewpass  =   $request->post('renewpass',2);
         $oldpass    =   $request->post('oldpass',0);
+
 
         //验证密码
         $mid    =   $this->mid;
@@ -273,6 +292,37 @@ class UserCenterController extends DefaultController
         else
             return ['code'=>403,'msg'=>'添加失败','data'=>''];
 
+    }
+
+    // 上传头像
+    public function actionUploadHeadPic()
+    {
+        header('Content-type:text/html;charset=utf-8');
+        $base64_image_content       = \Yii::$app->request->post('headpic',null);
+        if(!$base64_image_content) return ['code'=>404,'msg'=>'数据不能为空',data=>null];
+        $api_url           =        \Yii::$app->params['api_url'];
+        if (preg_match('/^(data:\s*image\/(\w+);base64,)/', $base64_image_content, $result)){
+            $type = $result[2];
+
+            $new_file = "./img/lvyou/headpic/".date('Ymd',time())."/";
+            if(!file_exists($new_file))
+            {
+                //检查是否有该文件夹，如果没有就创建，并给予最高权限
+                mkdir($new_file, 0700);
+            }
+            $new_file = $new_file.time().".{$type}";
+            if (file_put_contents($new_file, base64_decode(str_replace($result[1], '', $base64_image_content)))){
+                $img_url = $api_url . trim($new_file,'.' );
+                // 更新用户的头像地址路径
+                $member = Member::findOne($this->mid);
+                $member->litpic = $img_url;
+                if($member->save())
+                    return ['code'=>200,'msg'=>'头像保存成功','data'=>['headpic'=>$img_url]];
+                else
+                    return ['code'=>4042,'msg'=>'头像保存失败','data'=>['headpic'=>'']];
+            }else
+                return ['code'=>4041,'msg'=>'文件保存失败','data'=>null];
+        }
     }
 
 }

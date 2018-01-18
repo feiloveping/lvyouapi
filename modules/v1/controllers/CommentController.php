@@ -65,7 +65,6 @@ class CommentController extends DefaultController
 
     }
 
-
     // 添加评论
     public function actionAdd()
     {
@@ -100,9 +99,46 @@ class CommentController extends DefaultController
         else
             return ['code'=>400,'msg'=>'失败','data'=>''];
 
+    }
 
+    // 处理评论用户和虚拟用户的信息
+    public function actionGetMember(array $commentArr,$app_url)
+    {
+        // 对拿到的信息进行虚拟用户和真是用户信息混合
+        foreach ($commentArr as $k=>$v)
+        {
+            if(!$v['vr_nickname'])
+            {
+                $commentLister[$k] = [
+                    'content'     =>      $v['content'],
+                    'addtime'   =>      $v['addtime'],
+                    'piclist'   =>      $v['piclist'],
+                    'star'      =>      $v['star'],
+                    'nickname'  =>      $v['nickname'],
+                    'rank'      =>      $v['rank'],
 
-
+                ];
+            }else{
+                $commentLister[$k] = [
+                    'content'     =>      $v['content'],
+                    'addtime'   =>      $v['addtime'],
+                    'star'      =>      $v['star'],
+                    'nickname'  =>      $v['vr_nickname'],
+                    'rank'      =>      $v['vr_grade'],
+                ];
+            }
+            $piclist            =       explode(',',$v['piclist']);
+            if (!empty($piclist))
+            {
+                foreach ($piclist as $k1=>$v1)
+                {
+                    if(empty($v1)) break;
+                    $piclist[$k1]    =   $app_url    .   $v1;
+                }
+            }
+            $commentLister[$k]['piclist']   =   $piclist;
+        }
+        return $commentLister;
     }
 
 

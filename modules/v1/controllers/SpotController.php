@@ -2,10 +2,14 @@
 
 namespace app\modules\v1\controllers;
 
+use app\modules\components\helpers\FeiArr;
+use app\modules\components\helpers\FeiMaplocation;
+use app\modules\components\helpers\GeoHash;
 use app\modules\v1\models\Advertise;
 use app\modules\v1\models\Collection;
 use app\modules\v1\models\Comment;
 use app\modules\v1\models\Destinations;
+use app\modules\v1\models\Icon;
 use app\modules\v1\models\Member;
 use app\modules\v1\models\Piclist;
 use app\modules\v1\models\Question;
@@ -186,8 +190,7 @@ class SpotController extends DefaultController
 
         // 根据景点id计算景区的评价
         $typeid     =       \Yii::$app->params['typeid']['spot'];
-        $comment = Comment::getCommentCountByTypeId($typeid , $id);
-        $spotdetail['comment'] = $comment['count'] ;
+        $spotdetail['comment'] = Comment::getCommentCountByTypeId($typeid , $id);
         // 根据景点id查询相关门票
         $ticketRe = SpotTicket::getTicketBySpotId($id);
         // 对门票数据进行处理,分级说明以及价格
@@ -333,4 +336,52 @@ class SpotController extends DefaultController
         else
             return ['code'=>403 , 'msg'=>'新增失败' ,'data'=>''];
     }
+
+    // 附近的景点
+    public function actionSpotNear()
+    {
+        $spot = $this->runAction('all-spot');
+        $request = \Yii::$app->request;
+        $lng = $request->get('lng',98.50);
+        $lat = $request->get('lat',25.03);
+        $page = $request->get('page',1);
+        // 对拿到的数据计算距离并排序
+        $map = new FeiMaplocation();
+        foreach ($spot as $k=>$v)
+        {
+            $metre = $map->getdistances((double)$lat,(double)$lng,(double)$v['lat'],(double)$v['lng']);
+            $spot[$k]['metre'] = $map->getMetre($metre);
+        }
+        $feiArr = new FeiArr();
+        $spot = $feiArr->my_sort($spot,'metre');
+        $spot = $feiArr->pageArr($spot,$page);
+        // 对总页数进行处理
+        if(empty($spot) || $page>$spot['pagecount'])
+            return ['code'=>200,'data'=>'','msg'=>'未找到数据'];
+        else
+            return ['code'=>200,'data'=>$spot,'msg'=>''];
+    }
+
+    // 获得所有的数据并缓存
+    public function actionAllSpot()
+    {
+        $spotModel        =       new Spot();
+        $cache            =       \Yii::$app->cache;
+        $key              =       'all-spot';
+        $spot             =       $cache->getOrSet($key,function() use($spotModel) {
+            $spot = $spotModel->getAll();
+            $app_url = \Yii::$app->params['app_url'];
+            foreach ($spot as $k=>$v)
+            {
+                $iconlists = explode(',',$v['iconlist']);
+                $spot[$k]['iconlist'] = Icon::getIconTwoNameByIds($iconlists);
+                if(!empty($v['litpic']) && !strpos($v['litpic'],'ttp'))
+                    $spot[$k]['litpic'] = $app_url . $v['litpic'];
+            }
+            return $spot;
+        },60);
+
+        return $spot;
+    }
+
 }

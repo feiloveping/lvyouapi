@@ -67,8 +67,6 @@ class CollectionController extends DefaultController
         // 删除缓存数据
         // 先获取基本信息 , 便于清除缓存
         $collection =   Collection::getCollectionByids($ids);
-
-
         foreach ($collection as $k=>$v)
         {
             $redis = \Yii::$app->redis;
@@ -76,8 +74,7 @@ class CollectionController extends DefaultController
             $redis->del($key);
         }
         // 删除数据表中记录
-        $re = Collection::delCollectionByids($ids);
-        return $re;
+       return Collection::deleteAll(['id'=>$ids]);
     }
 
 }

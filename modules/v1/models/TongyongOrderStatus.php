@@ -20,4 +20,9 @@ class TongyongOrderStatus extends ActiveRecord
             ->all();
         return $orderStatus;
     }
+
+    public function getStatusDetail($status)
+    {
+        return TongyongOrderStatus::findOne(['status'=>$status]);
+    }
 }

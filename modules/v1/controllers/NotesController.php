@@ -86,7 +86,7 @@ class NotesController extends DefaultController
         $notes['content_url']    =      $api_url . '/v1/detail?type=notesdetail&id=' . $id;
         // 根据id和typeid获得评论量
         $typeid         =   $this->_typeid;
-        $commentcount   =   Comment::getCommentCountByTypeId($typeid,$id)['count'];
+        $commentcount   =   Comment::getCommentCountByTypeId($typeid,$id);
         $notes['commentcount'] = $commentcount;
 
         return ['code'=>200,'data'=>$notes,'msg'=>'ok'];

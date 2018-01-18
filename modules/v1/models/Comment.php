@@ -19,13 +19,21 @@ class Comment extends ActiveRecord
     public function getCommentCountByTypeId($typeid,$articleid)
     {
         return Comment::find()
+            ->where(['typeid'=>$typeid,'articleid'=>$articleid])
+            ->andWhere(['isshow'=>1])
+            ->asArray()
+            ->count();
+    }
+    // 根据typeid 和 articleid 获得评价总数 数组形式 - 只有articlecontroller在用,历史遗留问题
+    public function getCommentCountByTypeId2($typeid,$articleid)
+    {
+        return Comment::find()
             ->select('count(*) as count')
             ->where(['typeid'=>$typeid,'articleid'=>$articleid])
             ->andWhere(['isshow'=>1])
             ->asArray()
             ->one();
     }
-
     // 获得有图片的评论总数
 
     public function getCommentHasImg($typeid,$articleid)
