@@ -14,13 +14,23 @@ use yii\db\ActiveRecord;
 class LineJieshao extends ActiveRecord
 {
 
+    // 获得景点的每天介绍
     public function getJieshaoById($id)
     {
         return LineJieshao::find()
-            ->where(['id'=>$id])
+            ->where(['lineid'=>$id])
             ->asArray()
             ->orderBy('day')
             ->all();
     }
 
+    // 根据介绍id获得介绍的信息
+    public function getJieshaoByIdDay($id)
+    {
+        return LineJieshao::find()
+            ->select('id,jieshao')
+            ->where(['id'=>$id])
+            ->asArray()
+            ->one();
+    }
 }

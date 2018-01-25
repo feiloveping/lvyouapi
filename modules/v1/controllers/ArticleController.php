@@ -99,7 +99,7 @@ class ArticleController extends DefaultController
         $app_url    =   \Yii::$app->params['app_url'];
         // 根据id和typeid获得评论量
         $typeid         =   \Yii::$app->params['typeid']['article'];
-        $commentcount   =   Comment::getCommentCountByTypeId2($typeid,$id);
+        $commentcount   =   Comment::getCommentCountByTypeId($typeid,$id);
         $data = [
             'id'            =>      $article['id'],
             'title'         =>      $article['title'],

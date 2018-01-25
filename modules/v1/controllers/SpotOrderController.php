@@ -38,56 +38,14 @@ class SpotOrderController extends DefaultController
         if(empty($ticketmessage))
             return ['code'=>404,'data'=>'','msg'=>'景点门票信息没找到'];
 
-
+        $myDateFormat = new MyDateFormat();
+        $spotTicketPriceObj = new SpotTicketPrice();
         foreach ($ticketmessage as $k=>$v)
         {
             // 拼接上套餐字段
             $ticketmessage[$k]['packagename'] = $v['title'] . '(' . $v['kindname']  .')';
-
-           $time = SpotTicketPrice::getTicketTimeByTid($v['id']);
-            $times = [];
-            $nowtime = strtotime(date('Y-m-d',time()));
-
-            // 获取前两天的数据
-            // 对过期门票进行过滤 - 选择前两天的数据(若想要全部数据则不进行处理)
-            foreach ($time as $k2=>$v2)
-            {
-                if($v2['day'] >= $nowtime) {
-                    $times[] = $v2;
-                    if(count($times) > 1 ) break ;
-                }
-            }
-
-            // 对当前门票进行日期过滤 , 若这两天无数据.则进行置空 (前段要求)
-            $tomorrow = $nowtime + 86400;
-            if($times[0]['day'] != $nowtime)
-                $times[0] = [
-                    "day"=> $nowtime,
-                    "adultprice"=> "",
-                    "number"=> "0",
-                    "mydays"=> date('Y-m-d',$nowtime) ,
-                ];
-
-            if($times[0]['day'] == $tomorrow){
-                $times[1] = $times[0];
-                $times[0] = [
-                    "day"=> $nowtime,
-                    "adultprice"=> "",
-                    "number"=> "0",
-                    "mydays"=> date('Y-m-d',$nowtime) ,
-                ];
-            }
-
-            if($times[1]['day'] != $tomorrow)
-                $times[1] = [
-                    "day"=> $tomorrow,
-                    "adultprice"=> "",
-                    "number"=> "0",
-                    "mydays"=> date('Y-m-d',$tomorrow) ,
-                ];
-
-
-            $ticketmessage[$k]['timelist'] = $times ;
+            $time = $spotTicketPriceObj->getTicketTimeByTid($v['id']);
+            $ticketmessage[$k]['timelist'] = $myDateFormat->initTwoDate($time);
         }
         return ['code'=>200,'data'=>$ticketmessage,'msg'=>'ok'];
     }

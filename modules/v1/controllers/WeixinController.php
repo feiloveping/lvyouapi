@@ -16,7 +16,7 @@ class WeixinController extends Controller
 {
     public function actionIndex()
     {
-        $curl = new Curl();
+
         $url = 'http://www.baidu.com';
         //1. 将timestamp , nonce , token 按照字典排序
         $timestamp = $_GET['timestamp'];

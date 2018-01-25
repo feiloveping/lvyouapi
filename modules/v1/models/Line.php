@@ -86,18 +86,49 @@ class Line extends ActiveRecord
 
     }
 
-
     // 根据获得详细数据
-    // reserved1
     public function lineDetail($id)
     {
         $line      =       Line::find()
-            ->select('id,title,sellpoint,bookcount,satisfyscore,price,lineday,piclist,
-                            storeprice,supplierlist,title,features ,feeinclude,reserved2 as feenotinclude,payment'
+            ->select('id,title,sellpoint,bookcount,satisfyscore,price,lineday,piclist,reserved1 as jieshao,
+                            storeprice,supplierlist,title,features ,feeinclude,payment'
                 )
             ->where('id=' . $id )
             ->asArray()
             ->one();
         return $line;
     }
+
+    // 根据lineid获得一些简单信息
+    public function getEasyLineByid($id)
+    {
+        $line      =       Line::find()
+            ->select('id,aid,title,litpic,supplierlist,title,linebefore,storeprice')
+            ->where(['id'=>$id] )
+            ->asArray()
+            ->one();
+        return $line;
+    }
+
+    // 获得首页的简单列表
+    public function getListerHome()
+    {
+        return Line::find()
+            ->select('id,litpic,title,sellpoint')
+            ->where(['ishidden'=>0])
+            ->orderBy('bookcount desc')
+            ->limit(6)
+            ->asArray()->all();
+    }
+
+    // 根据id获取收藏所需要的信息
+    public function collectionMessage($id)
+    {
+        return Line::find()
+            ->select('id as indexid,price,litpic,bookcount,title,iconlist,satisfyscore')
+            ->where('id='.$id)
+            ->asArray()->one();
+    }
+
+
 }

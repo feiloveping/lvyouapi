@@ -10,6 +10,7 @@ namespace app\modules\v1\controllers;
 
 
 use app\modules\components\helpers\FeiValidate;
+use app\modules\components\helpers\MyDateFormat;
 use app\modules\v1\models\Collection;
 use app\modules\v1\models\Icon;
 use app\modules\v1\models\Member;
@@ -128,6 +129,14 @@ class UserCenterController extends DefaultController
             'mobile'    =>      $memberMessage['mobile'],
             'verifystatus'    =>      $memberMessage['verifystatus'],
         ];
+
+        // 处理生日
+        $birthday = $memberMessage['birth_date'];
+        if($birthday)
+            $data['age'] = MyDateFormat::getAgeByBirthDay($birthday);
+        else
+            $data['age'] = '未知';
+
         return ['code'=>200,'data'=>$data,'msg'=>'ok'];
     }
 
@@ -181,6 +190,10 @@ class UserCenterController extends DefaultController
             $data['wechat']         = $memberMessage['wechat'];
             $data['constellation']  = $memberMessage['constellation'];
             Member::updateAll($data,['mid'=>$mid]);
+
+            // 对修改后的信息保存到融云
+            \Yii::$app->runAction('v1/rongyun/flush-user',['userid'=>$mid,'name'=>$data['nickname'],'headpic'=>$data['litcpic']]);
+
             return ['code'=>200,'data'=>'','msg'=>'修改成功'];
         }
 
@@ -316,8 +329,11 @@ class UserCenterController extends DefaultController
                 // 更新用户的头像地址路径
                 $member = Member::findOne($this->mid);
                 $member->litpic = $img_url;
-                if($member->save())
-                    return ['code'=>200,'msg'=>'头像保存成功','data'=>['headpic'=>$img_url]];
+                if($member->save()) {
+                    // 对修改后的信息保存到融云
+                    \Yii::$app->runAction('v1/rongyun/flush-user',['userid'=>$this->mid,'name'=>$member->nickname,'headpic'=>$img_url]);
+                    return ['code' => 200, 'msg' => '头像保存成功', 'data' => ['headpic' => $img_url]];
+                }
                 else
                     return ['code'=>4042,'msg'=>'头像保存失败','data'=>['headpic'=>'']];
             }else

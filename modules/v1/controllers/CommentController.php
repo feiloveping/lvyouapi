@@ -65,6 +65,20 @@ class CommentController extends DefaultController
 
     }
 
+    // 评论头部
+    public function actionCommentHead()
+    {
+        $commentObj             =       new Comment();
+        $request                =       \Yii::$app->request;
+        $typeid                 =       $request->get('typeid');
+        $indexid                =       $request->get('id');
+        $commentArr             =       $commentObj->getCommentStarCount($typeid,$indexid);
+        $commentCount           =       $commentObj->getLevelComment($commentArr);
+        $commentCount['count']  =       (int)$commentObj->getCommentCountByTypeId($typeid,$indexid);
+        $commentCount['imgcount']=      (int)$commentObj->getCommentHasImg($typeid,$indexid);
+        return ['code'=>200,'data'=> $commentCount,'msg'=>'ok'];
+    }
+
     // 添加评论
     public function actionAdd()
     {

@@ -1,0 +1,49 @@
+/*默认样式*/
+body,ol,ul,h1,h2,h3,h4,h5,h6,p,th,td,dl,dd,form,fieldset,legend,input,textarea,select{margin:0;padding:0;box-sizing:border-box;outline:none;}
+*{font-family:"微软雅黑";-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}/*禁止复制*/
+[contenteditable = "true"], input, textarea {-webkit-user-select: auto!important;-khtml-user-select: auto!important;-o-user-select: auto!important;/*-moz-user-select: auto!important;*//*-ms-user-select: auto!important;*//*user-select: auto!important;*/  }
+::-webkit-scrollbar {width: 0;height:0;}/* 滚动槽 */::-webkit-scrollbar-track {width:0}/* 滚动条滑块 */::-webkit-scrollbar-thumb {background: rgba(0,0,0,0.1); }::-webkit-scrollbar-thumb:window-inactive {background: rgba(0,0,0,0.2);}
+/*a,span{text-decoration:none;outline:none;blr:expression(this.onFocus=this.blur());-webkit-tap-highlight-color: #fff;}*/
+a:focus,span:focus{ -moz-outline-style:none; -webkit-tap-highlight-color: rgba(255,255,255,0)/* FF */ }
+input,span{border:0;outline: none;-webkit-tap-highlight-color:rgba(255,0,0,0);background:transparent}
+div,a,span,p{-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;}
+body.active{background:#ccc;width:100%;position: absolute;top:0;bottom:0;}
+table{border-collapse:collapse;border-spacing:0;}
+span{margin:0;padding:0}
+ul,li,ol,dl,dt,dd{list-style:none;}
+img{border:none;display: block}
+li,body{box-sizing:border-box;}
+#content{-webkit-overflow-scrolling: touch;overflow-y: auto;padding:12px;}
+
+html {
+    font-size: 16px;
+}
+
+@media screen and (min-width: 375px) {
+    html {
+        /* iPhone6的375px尺寸作为16px基准，414px正好18px大小, 600 20px */
+        font-size: calc(100% + 2 * (100vw - 375px) / 39);
+        font-size: calc(16px + 2 * (100vw - 375px) / 39);
+    }
+}
+@media screen and (min-width: 414px) {
+    html {
+        /* 414px-1000px每100像素宽字体增加1px(18px-22px) */
+        font-size: calc(112.5% + 4 * (100vw - 414px) / 586);
+        font-size: calc(18px + 4 * (100vw - 414px) / 586);
+    }
+}
+@media screen and (min-width: 600px) {
+    html {
+        /* 600px-1000px每100像素宽字体增加1px(20px-24px) */
+        font-size: calc(125% + 4 * (100vw - 600px) / 400);
+        font-size: calc(20px + 4 * (100vw - 600px) / 400);
+    }
+}
+@media screen and (min-width: 1000px) {
+    html {
+        /* 1000px往后是每100像素0.5px增加 */
+        font-size: calc(137.5% + 6 * (100vw - 1000px) / 1000);
+        font-size: calc(22px + 6 * (100vw - 1000px) / 1000);
+    }
+}

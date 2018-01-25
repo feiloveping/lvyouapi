@@ -15,6 +15,7 @@ use app\modules\v1\models\Advertise;
 use app\modules\v1\models\Article;
 use app\modules\v1\models\Hotel;
 use app\modules\v1\models\HotelAttr;
+use app\modules\v1\models\Line;
 use app\modules\v1\models\Notes;
 use app\modules\v1\models\Photo;
 use app\modules\v1\models\Question;
@@ -26,12 +27,6 @@ class HomeController extends DefaultController
 {
     public $modelClass = '';
 
-
-    // 路由测试
-    public function actionIndex()
-    {
-        echo 'ok';
-    }
     // 首页banner图  - 有问题,目前是写死的
     public function actionGetBannerIndex()
     {
@@ -125,6 +120,18 @@ class HomeController extends DefaultController
         return $photo;
     }
 
+    // 首页线路
+    public function actionGetLineIndex()
+    {
+        $line =  Line::getListerHome();
+        $app_url = \Yii::$app->params['app_url'];
+        foreach ($line as $k=>$v)
+        {
+            $line[$k]['litpic'] = $app_url . $v['litpic'];
+        }
+        return $line;
+    }
+
     // 网站首页热门问答
     public function actionGetQuestionIndex()
     {
@@ -152,6 +159,7 @@ class HomeController extends DefaultController
         $notes      =   $this->runAction('get-notes-index');
         $photo      =   $this->runAction('get-photo-index');
         $question   =   $this->runAction('get-question-index');
+        $line       =   $this->runAction('get-line-index');
 
         $data = [
             'banner'        =>      $banner,
@@ -162,6 +170,7 @@ class HomeController extends DefaultController
             'notes'         =>      $notes,
             'photo'         =>      $photo,
             'question'      =>      $question,
+            'line'          =>      $line,
         ] ;
 
         return $data;

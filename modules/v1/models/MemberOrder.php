@@ -84,27 +84,29 @@ class MemberOrder extends ActiveRecord
     public function totalCount($id)
     {
         $order = MemberOrder::find()
-            ->select('id,typeid,price,dingnum,usedate,departdate')
+            ->select('id,typeid,price,dingnum,usedate,departdate,roombalance,roombalancenum')
             ->where(['id'=>$id])
             ->one();
+
+        // 加上单方差
+        $total = $order['roombalance'] * $order['roombalancenum'] ;
         switch ($order['typeid'])
         {
-            case 1: // 线路 - 暂定
-                $total = $order['price'] * $order['dingnum'];;
+            case 1: // 线路
+                $total += $order['price'] * $order['dingnum'];;
                 break;
             case 2: // 酒店
                 $day    =   (strtotime($order['departdate']) -  strtotime($order['departdate'])) / 86400 ;
-                $total = $order['price'] * $order['dingnum'] * $day;
+                $total += $order['price'] * $order['dingnum'] * $day;
+                break;
             case 5: // 景点
-                $total = $order['price'] * $order['dingnum'];
+                $total += $order['price'] * $order['dingnum'];
                 break;
             case 13: //团购
-                $total = $order['price'] * $order['dingnum'];;
+                $total += $order['price'] * $order['dingnum'];;
                 break;
         }
-
         return $total;
-
     }
 
     // 根据订单id获取订单详细信息

@@ -52,7 +52,11 @@ class LoginController extends DefaultController
         $Member = Member::findOne($member['mid']);
         $Member->logintime = time();
         $Member->save();
-        return ['code'=>200,'data'=>['token'=>$token] , 'msg'=>'ok'] ;
+
+        // 获得融云token
+        $re = \Yii::$app->runAction('v1/rongyun/gettoken',['userid'=>$member['mid'],'name'=>$member['nickname']]);
+        $ry_token = json_decode($re,true)['token'];
+        return ['code'=>200,'data'=>['token'=>$token,'ry_token'=>$ry_token] , 'msg'=>'ok'] ;
     }
 
     public function actionLogout()
@@ -128,7 +132,11 @@ class LoginController extends DefaultController
             $where  =   ['mobile'=>$mobile];
             $member    =   Member::getMember($where);
             $token = FeiToken::createToken($member['mid'],\Yii::$app->params['myEncrypt_key']);
-            return ['code'=>200,'data'=>['token'=>$token],'msg'=>'ok'] ;
+
+            // 获得融云token
+            $re = \Yii::$app->runAction('v1/rongyun/gettoken',['userid'=>$member['mid'],'name'=>$member['nickname']]);
+            $ry_token = json_decode($re,true)['token'];
+            return ['code'=>200,'data'=>['token'=>$token,'ry_token'=>$ry_token] , 'msg'=>'ok'] ;
         }
     }
 

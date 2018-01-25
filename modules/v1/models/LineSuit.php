@@ -14,6 +14,7 @@ use yii\db\ActiveRecord;
 class LineSuit extends ActiveRecord
 {
 
+    // 根据线路id查找先关信息
     public function getSuitByLineId($id)
     {
         return LineSuit::find()
@@ -22,5 +23,16 @@ class LineSuit extends ActiveRecord
             ->asArray()
             ->all();
     }
+
+    // 根据suitid查找相关信息
+    public function getSuitBySuitId($id)
+    {
+        return LineSuit::find()
+            ->select('id,lineid,suitname,description,propgroup')
+            ->where(['id'=>$id])
+            ->asArray()
+            ->one();
+    }
+
 
 }

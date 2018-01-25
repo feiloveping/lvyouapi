@@ -62,7 +62,6 @@ class SpotController extends DefaultController
         return $banner;
     }
 
-
     // 景点模块 banner和热门景点综合
     public function actionSpotIndex()
     {
@@ -201,8 +200,8 @@ class SpotController extends DefaultController
             {
                 $lastoffer          =       unserialize($v2['lastoffer']);
                 unset($v[$k2]['lastoffer']);
-                    $v[$k2][ 'sellprice']     =      $lastoffer['adultprice'];
-                    $v[$k2][ 'marketPrice']   =      $lastoffer['adultmarketprice'];
+                $v[$k2][ 'sellprice']     =      $lastoffer['adultprice'];
+                $v[$k2][ 'marketPrice']   =      $lastoffer['adultmarketprice'];
             }
             $ticket[]       =          [
                 'kindid'    =>      $k,

@@ -24,16 +24,6 @@ class Comment extends ActiveRecord
             ->asArray()
             ->count();
     }
-    // 根据typeid 和 articleid 获得评价总数 数组形式 - 只有articlecontroller在用,历史遗留问题
-    public function getCommentCountByTypeId2($typeid,$articleid)
-    {
-        return Comment::find()
-            ->select('count(*) as count')
-            ->where(['typeid'=>$typeid,'articleid'=>$articleid])
-            ->andWhere(['isshow'=>1])
-            ->asArray()
-            ->one();
-    }
     // 获得有图片的评论总数
 
     public function getCommentHasImg($typeid,$articleid)
@@ -133,7 +123,15 @@ class Comment extends ActiveRecord
             ->alias('c')
             ->select('c.id,c.memberid,c.content,c.vr_headpic,c.addtime,c.dockid,c.level as star,c.vr_nickname ,
              m.nickname,c.vr_grade ,m.rank ,m.litpic as headpic ')
-            ->where('c.isshow=1 and c.typeid= '.$typeid.' and c.articleid='.$id);
+            ->orderBy('c.id desc')
+            ->where('c.isshow=1 ');
+
+        if($typeid != 0)
+            $query->andWhere('c.typeid= '.$typeid);
+
+        if($id != 0)
+            $query->andWhere('c.articleid='.$id);
+
         $countQuery = clone $query;
         $pages = new Pagination(['totalCount' => $countQuery->count()]);
         $pages->pageSize = \Yii::$app->params['page_size'];

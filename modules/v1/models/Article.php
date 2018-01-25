@@ -26,7 +26,9 @@ class Article extends ActiveRecord
             ->select('id,title,concat(\''.$app_url.'\',`litpic`) as litpic,modtime,shownum')
             ->where('ishidden=0 and litpic is not null')
             ->orderBy('shownum desc')
-            ->asArray()->limit(3)->all();
+            ->asArray()
+            ->limit(3)
+            ->all();
     }
 
     // 根据参数获取文档列表信息

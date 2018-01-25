@@ -27,4 +27,11 @@ class HelloController extends Controller
     {
         echo $message . "\n";
     }
+
+    public function actionTest()
+    {
+        echo 'test';
+    }
+
+
 }

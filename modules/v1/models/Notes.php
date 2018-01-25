@@ -23,13 +23,14 @@ class Notes extends ActiveRecord
     public function getIndexNotes()
     {
         $app_url = \Yii::$app->params['app_url'];
-
         return Notes::find()
             ->select('id,title,concat(\'' .$app_url. '\',`litpic`) as litpic,shownum,modtime')
-            ->where('status=0 and litpic is not null')
+            ->where('status=1 and litpic is not null')
             ->orderBy('shownum desc')
             ->limit(3)
-            ->asArray()->all();
+            ->asArray()
+            ->all();
+
     }
 
     // 获取最新的5个游记

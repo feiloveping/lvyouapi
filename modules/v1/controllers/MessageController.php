@@ -18,6 +18,9 @@ use app\modules\v1\models\SmsSendlog;
 class MessageController extends DefaultController
 {
     public $modelClass = '' ;
+    public $ryappkey;
+    public $ryappsecret;
+
 
     public function actionSendVerifyMessage($mobile,$msgtype,$ip )
     {
@@ -62,4 +65,8 @@ class MessageController extends DefaultController
             return ['code'=>200,'data'=>'','msg'=>'ok'];
         }
     }
+
+
+
+
 }

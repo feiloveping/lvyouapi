@@ -91,6 +91,7 @@ class MemberOrderController extends DefaultController
                 'status' => $v['status'],
                 'ispinglun'=>$v['ispinglun'],
                 'productname' => $v['productname'],
+                'productid'   =>$v['productid'],
                 'usedate' => $v['usedate'],
                 'departdate' => $v['departdate'],
                 'statusname' => $v['status_name'],
@@ -169,6 +170,7 @@ class MemberOrderController extends DefaultController
                  'id' => $v['id'],
                  'typeid' => $v['typeid'],
                  'productname' => $v['productname'],
+                 'productid'   =>$v['productid'],
                  'usedate' => $v['usedate'],
                  'departdate' => $v['departdate'],
                  'totalcount' => $memberOrder->totalCount($v['id']),
@@ -177,22 +179,6 @@ class MemberOrderController extends DefaultController
          $data = ['order' => $order, 'pagecount' => $lister['pagecount']];
          return ['code' => 200, 'data' => $data, 'msg' => 'ok'];
      }
-
-     // 再次预定
-    public function actionReOrder()
-    {
-        $request        =       \Yii::$app->request;
-        $id             =       $request->get('id','');
-        if(!$id)    return ['code'=>'403','msg'=>'参数错误','data'=>null];
-
-        // 根据订单id获得详情
-        $order = MemberOrder::getDetail($id);
-        $data       =       [
-            'typeid'        =>       $order['typeid'],
-            'id'            =>       $order['productautoid'],
-        ];
-        return ['code'=>200,'msg'=>'ok','data'=>$data];
-    }
 
 
 

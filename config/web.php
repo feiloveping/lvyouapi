@@ -20,8 +20,8 @@ $config = [
         'v1'=>[
             'class' => 'app\modules\v1\Module',
         ],
-        'toilet'=>[
-            'class' => 'app\modules\toilet\Module',
+        'weixin'=>[
+            'class' => 'app\modules\weixin\Module',
         ],
     ],
     'components' => [

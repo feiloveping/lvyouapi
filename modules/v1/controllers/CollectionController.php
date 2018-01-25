@@ -50,16 +50,73 @@ class CollectionController extends DefaultController
 
     }
 
+    // 添加到收藏 - 并增加到redis - 通用
+    public function actionAddCollectionTong()
+    {
+        if(!$this->logsign)
+            return ['code'=>401,'msg'=>'用户未登录','data'=>''];
+
+        $request = \Yii::$app->request;
+        $typeid = $request->get('typeid');
+        $indexid = $request->get('id');
+        $mid = $this->mid;
+        $collection = new Collection();
+        $collection->typeid = $typeid;
+        $collection->indexid = $indexid;
+        $collection->cotime = date('Y-m-d H:i:s',time()) ;
+        $key = 'collect:'.$typeid. ':'.$indexid.':'.$mid ;
+        // 判断是否已经收藏
+        $redis = \Yii::$app->redis;
+        if($redis->get($key))
+            return ['code'=>402,'msg'=>'已经收藏过','data'=>''];
+        elseif (Collection::isCollection($typeid,$indexid,$mid)){
+            $redis->set($key ,'1');         // 更新redis 数据
+            return ['code'=>402,'msg'=>'已经收藏过','data'=>''];
+        }
+
+        // 若未收藏,则进行收藏
+        $redis->set($key ,'1');
+        $collection->memberid = $this->mid;
+        $collection->save();
+        return ['code'=>200,'msg'=>'已经收藏过','data'=>''];
+
+    }
+
+    // 取消收藏 - 数据库和redis 缓存清除 - 通用
+    public function actionDelCollectionTong()
+    {
+        if(!$this->logsign)
+            return ['code'=>401,'msg'=>'用户未登录','data'=>''];
+
+        $request = \Yii::$app->request;
+        $typeid = $request->get('typeid');
+        $indexid = $request->get('id');
+        $redis = \Yii::$app->redis;
+
+        $mid = $this->mid;
+        $key = 'collect:'.$typeid. ':'.$indexid.':'.$mid ;
+        $collectionObj = new Collection();
+
+        if(! $redis->get($key) || !$collectionObj->isCollection($typeid,$indexid,$mid) )
+            return ['code'=>402,'msg'=>'用户未收藏该商品','data'=>''];
+
+        $redis->del($key);
+        $collectionObj->delCollection($typeid,$indexid,$mid) ;
+        return ['code'=>200,'data'=>'','msg'=>'取消成功'];
+    }
+
     // 取消收藏 - 数据库和redis 缓存清除
     public function actionDelCollection($typeid,$indexid,$mid)
     {
         $redis = \Yii::$app->redis;
+
+        $collectionObj = new Collection();
         $key = 'collect:'.$typeid. ':'.$indexid.':'.$mid ;
-        if(! $redis->get($key) || !Collection::isCollection($typeid,$indexid,$mid) ){
+        if(! $redis->get($key) || !$collectionObj->isCollection($typeid,$indexid,$mid) ){
             return false ;  // 用户未收藏该商品
         }
         $redis->del($key);
-        return Collection::delCollection($typeid,$indexid,$mid) ;
+        return $collectionObj->delCollection($typeid,$indexid,$mid) ;
     }
     // 批量删除收藏 - 根据收藏id删除
     public function actionDelCollectionByids(array $ids)

@@ -8,6 +8,7 @@
 
 namespace app\modules\v1\controllers;
 
+use app\modules\components\helpers\MyDateFormat;
 use app\modules\v1\models\Hotel;
 use app\modules\v1\models\HotelRoom;
 use app\modules\v1\models\HotelRoomPrice;
@@ -31,20 +32,11 @@ class HotelOrderController extends DefaultController
         foreach ($roomMessage as $k=>$v)
         {
             $time       =  HotelRoomPrice::getRoomPriceTimeByTid($v['id']);
-            $times      = [];
-            $nowtime    = strtotime(date('Y-m-d',time()));
-            // 对过期套餐进行过滤 - 选择前两天的数据(若想要全部数据则不进行处理)
-            foreach ($time as $k2=>$v2)
-            {
-                if($v2['day'] >= $nowtime) {
-                    $times[] = $v2;
-                    if(count($times) > 1 ) break ;
-                }
-            }
-            $roomMessage[$k]['timelist'] = $times ;
+            // 对过期套餐进行过滤
+            $myDate = new MyDateFormat();
+            $roomMessage[$k]['timelist'] = $myDate->initDate($time,'day');
         }
-
-        return $roomMessage;
+        return ['code'=>200,'data'=>$roomMessage,'msg'=>'ok'];
     }
 
     // 根据当前房间id获取所有时间的房间
@@ -88,7 +80,7 @@ class HotelOrderController extends DefaultController
             'memberid'      =>$this->mid,                               // 用户id
             'suitid'        =>$result['roomid'],                        // 房间类型id
             'usedate'       =>date('Y-m-d',$result['usedate']), // 使用时间 - 即开始时间
-            'departdate'    =>date('Y-m-d',$result['leavedate']),// 离店时间
+            'departdate'    =>date('Y-m-d',$result['leavetime']),// 离店时间
             'linkman'       =>$result['linkman'],                       // 联系人
             'linktel'       =>$result['linktel'],                       // 联系电话
             'addtime'       =>time(),                                   // 订单创建时间
@@ -101,6 +93,7 @@ class HotelOrderController extends DefaultController
             return ['code'=>400,'data'=>'','msg'=>'参数不能为空'];
         // 对房间信息进行处理(价格,名称)
         $hotelRoommessage       = HotelRoom::getRoomByRid($data['suitid']);
+
         if(!empty($hotelRoommessage['piclist']))
         $data['litpic']         =   explode(',',$hotelRoommessage['piclist'])[0];
         $hotelid                =   $hotelRoommessage['hotelid'];
@@ -109,28 +102,33 @@ class HotelOrderController extends DefaultController
         $data['productaid']     =   $hotelMessage['aid'];
         $data['productname']    =   $hotelMessage['title'] ;
         $data['productautoid']  =   $hotelid;
+        $data['supplierlist']   =   $hotelMessage['supplierlist'];
         // 处理选择日期的房间库存和价格
         // 验证每天的库存 suitid 和day , 计算出总的房间价格
         $roomPrice = 0;
+        $roombalance     =   0;
 
-        for ($i = $result['usedate'] ; $i <$result['leavedate'] ; $i = $i+86400)
+
+        for ($i = $result['usedate'] ; $i <$result['leavetime'] ; $i = $i+86400)
         {
             $roomNumberPrice = HotelRoomPrice::getNumberBySuitidDay($data['suitid'],$i);
             $number          =  $roomNumberPrice['number'];
             if($number != -1 && $number<1) return ['code'=>4001,'data'=>['day'=>$i],'msg'=>'库存不足,请选择其它商品'];
             $roomPrice       +=  $roomNumberPrice['price'];
+            $roombalance     =   $roomNumberPrice['roombalance'];
         }
-
+        // 处理单房差数量 和价格
+        $data['roombalancenum'] = $result['roombalancenum'];
+        $data['roombalance']    =   $roombalance;
         // 只记录所有房间的单价       -      付款金额 = 数量 * 单价 不存数据库,支付时根据订单id进行计算
         $data['price'] = $roomPrice;
-
-        // 对联系人进行初步处理(联系人以json形式传递id)
-        $tourer = json_decode($result['tourer']);
-        if(count($tourer) != $data['dingnum'])  return ['code'=>4001,'data'=>'','msg'=>'请选择游客信息'];
+        // 对联系人进行初步处理(联系人以,拼接形式传递id)
+        $tourer = explode(',',$result['tourer']);
+        if(count($tourer) != $data['dingnum'])  return ['code'=>4001,'data'=>[],'msg'=>'请选择游客信息'];
 
         // 根据条件查到所有的游客信息
         $linkmans = MemberLinkman::getLinkmanByIds($tourer);
-        if(empty($linkmans)) return ['code'=>4002,'data'=>'','msg'=>'游客信息错误'];
+        if(empty($linkmans)) return ['code'=>4002,'data'=>[],'msg'=>'游客信息错误'];
 
         // 生成订单操作  - 订单状态直接为等待确认状态
         $data['status'] = 1;
@@ -159,9 +157,9 @@ class HotelOrderController extends DefaultController
             ->execute();
 
         if($re)
-            return ['code'=>200,'data'=>'','msg'=>'订单创建成功'];
+            return ['code'=>200,'data'=>[],'msg'=>'订单创建成功'];
         else
-            return ['code'=>200,'data'=>'','msg'=>'订单创建成功,游客添加失败'];
+            return ['code'=>200,'data'=>[],'msg'=>'订单创建成功,游客添加失败'];
     }
 
 

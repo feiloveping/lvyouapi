@@ -56,7 +56,8 @@ class SpotTicket extends ActiveRecord
         return  SpotTicket::find()->where(['id'=>$id])
             ->select(['id','title','sellprice','ourprice','buylimitnummin','buylimitnummax',
                 'day_before','hour_before','minute_before'])
-            ->asArray()->one();
+            ->asArray()
+            ->one();
     }
 
     // 根据景点id获得 套餐信息

@@ -24,14 +24,13 @@ class HotelRoomPrice extends ActiveRecord
             ->asArray()->all();
     }
 
-    //根据房型id和时间获得当前库存
+    //根据房型id和时间获得当前库存,价格,单房差
     public function getNumberBySuitidDay($suitid,$day)
     {
         return HotelRoomPrice::find()
             ->select('number,price')
             ->where(['suitid'=>$suitid,'day'=>$day])
             ->asArray()
-
             ->one();
     }
 

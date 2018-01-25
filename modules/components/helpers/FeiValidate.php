@@ -154,4 +154,8 @@ class FeiValidate
         }
         return false;
     }
+
+    /**
+     * 去除文本编辑器中的style
+     */
 }

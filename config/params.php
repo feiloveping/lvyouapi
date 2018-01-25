@@ -29,10 +29,12 @@ return [
         ['id'=>5,'cardtype'=>'军官证'],
     ],
     'typeid'=>[
+        'all'       =>      0,
         'line'      =>      1,
         'hotel'     =>      2,
         'article'   =>      4,
         'spot'      =>      5,
+        'photo'     =>      6,
         'tuan'      =>      14,
         'notes'     =>      101,
 
@@ -45,4 +47,11 @@ return [
         ['id'=>14,'typename'=>'团购'],
     ],
     'phoneCityCode' => $phoneCityCode,
+    'rongyun'=>[
+        'ry_appkey' => '25wehl3u29wiw',
+        'ry_appsecret'=>'gUFi69Ew6wN',
+        'ry_default_headpic'=>'/img/lvyou/headpic/ry_head_default.jpg',
+    ],
+
+
 ];

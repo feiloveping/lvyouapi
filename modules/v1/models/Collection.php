@@ -45,7 +45,7 @@ class Collection extends ActiveRecord
         switch ((int)$typeid)
         {
             case 1:
-                $query->InnerJoin(Hotel::tableName() . 'as p','c.indexid=p.id' );    // 现在还未写,后面实现
+                $query->InnerJoin(Line::tableName() . 'as p','c.indexid=p.id' );
                 break;
             case 2:
                 $query->InnerJoin(Hotel::tableName() . 'as p','c.indexid=p.id' );
@@ -128,7 +128,15 @@ class Collection extends ActiveRecord
             switch ($v['typeid'])
             {
                 case 1:
-                    //$query->leftJoin(Hotel::tableName() . 'as p','c.indexid=p.id' );    // 现在还未写,后面实现
+                    $collectiobDetail = Line::collectionMessage($v['indexid']);;
+                    if(empty($collectiobDetail))
+                    {
+                        self::delCollectionByids($v['id']);
+                        unset($collectionArr[$k]);
+                    }else{
+                        $collection[$k] = $collectiobDetail;
+                        $collection[$k]['typeid']   =  1;
+                    }
                     break;
                 case 2:
                     $collectiobDetail = Hotel::collectionMessage($v['indexid']);;
@@ -140,7 +148,6 @@ class Collection extends ActiveRecord
                         $collection[$k] = $collectiobDetail;
                         $collection[$k]['typeid']   =  2;
                     }
-
                     break;
                 case 5:
                     $collectiobDetail = Spot::collectionMessage($v['indexid']);;
