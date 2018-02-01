@@ -87,7 +87,7 @@ class LineController extends DefaultController
         }
 
         if(!$line)
-            return ['code'=>200,'data'=>['pagecount'=>'','data'=>[]],'msg'=>'没有更多的数据了'];
+            return ['code'=>200,'data'=>['pagecount'=>'','line'=>[]],'msg'=>'没有更多的数据了'];
         else{
             // 对数据的litpic处理
             $app_url        =       \Yii::$app->params['app_url'];

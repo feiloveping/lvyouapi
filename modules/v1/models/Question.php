@@ -42,7 +42,8 @@ class Question extends ActiveRecord
     public function getQuestionLister($typeid,$id,$page)
     {
         $query = Question::find()
-            ->select('content,replycontent,replytime,addtime,nickname,phone')->where(['status'=>1]);
+            ->select('content,replycontent,replytime,addtime,nickname,phone')
+            ->where(['status'=>1]);
 
         if($typeid != 0)  $query->andWhere(['typeid'=>$typeid,'productid'=>$id]);
         $countQuery = clone $query;
@@ -56,6 +57,7 @@ class Question extends ActiveRecord
         $question  = $query
             ->offset($pages->offset)
             ->limit($pages->limit)
+            ->orderBy('addtime desc')
             ->asArray()
             ->all();
 

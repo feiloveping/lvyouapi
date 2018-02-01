@@ -44,9 +44,10 @@ class Hotel extends ActiveRecord
         $app_url = \Yii::$app->params['app_url'];
         $query = Hotel::find()->alias('h')
                     ->select('h.id,h.title,h.seotitle,h.iconlist,concat(\''. $app_url .'\',`h`.`litpic`) as litpic,h.price,h.satisfyscore,h.bookcount')
-                    ->where('h.ishidden=0');
+                    ->where('h.ishidden=0 and h.price>0');
         // 对搜索处理
-        if($keyword)  $query->andWhere('h.title like \'% ' . $keyword . ' \'%');
+        if($keyword)  $query->andWhere(['like','h.title',$keyword]);
+
         // 对时间进行处理
         if ($time)
         {
@@ -109,7 +110,7 @@ class Hotel extends ActiveRecord
         $pagecount = $pages->getPageCount();
         if($page > $pagecount)
             return false;
-        $hotelArr = $models = $query->offset($pages->offset)
+        $hotelArr  = $query->offset($pages->offset)
             ->limit($pages->limit)
             ->asArray()
             ->all();
@@ -153,13 +154,15 @@ class Hotel extends ActiveRecord
     // 网站首页默认展示的6个热门住宿
     public function hotelIndex6()
     {
-        $app_url = \Yii::$app->params['app_url'];
         return Hotel::find()
-            ->select('id,bookcount,title,price,concat(\'' . $app_url . '\',`litpic` ) as litpic')
-            ->where('ishidden=0')
+            ->alias('h')
+            ->select('h.id,h.bookcount,h.title,h.price,h.litpic')
+            ->where('h.ishidden=0')
+            ->innerJoin(HotelRoom::tableName() .' as hr','hr.hotelid=h.id')
             ->orderBy('bookcount desc')
             ->limit('6')
-            ->asArray()->all();
+            ->asArray()
+            ->all();
     }
 
     //根据酒店id选择简单的几个数据
@@ -180,6 +183,18 @@ class Hotel extends ActiveRecord
             ->select('id as indexid,price,litpic,bookcount,title,iconlist,satisfyscore')
             ->where('id='.$id)
             ->asArray()->one();
+    }
+
+    // 获得所有的酒店
+    public function getAll()
+    {
+        return Hotel::find()
+            ->select(['h.id','h.title','h.satisfyscore','h.bookcount','h.price','h.litpic','h.iconlist','h.lng','h.lat'])
+            ->alias('h')
+            ->where('h.ishidden=0 and h.price>0')
+            ->innerJoin(HotelRoom::tableName() .' as hr','hr.hotelid=h.id')
+            ->asArray()
+            ->all();
     }
 
 }

@@ -28,31 +28,35 @@ class Line extends ActiveRecord
     // 根据参数获得数据 - 列表
     public function listerPyParam($param , $page ,$keyword = '')
     {
-        $query      =       Line::find()->select('id,title,price,price,bookcount,satisfyscore,litpic,iconlist')->where(['ishidden'=>0]);
+        $query      =       Line::find()
+            ->alias('l')
+            ->select('l.id,l.title,l.price,l.price,l.bookcount,l.satisfyscore,l.litpic,l.iconlist')
+            ->where(['l.ishidden'=>0])
+            ->innerJoin(LineSuit::tableName() . ' as ls','ls.lineid=l.id');
         // 搜索
         if(!empty($keyword))
-            $query->andWhere(['like','title',$keyword]);
+            $query->andWhere(['like','l.title',$keyword]);
 
         $params     =       explode('-',$param);
         // 处理第一个参数 目的地
         if($params[0])
-            $query->andWhere(['startcity'=>$params[0]]);
+            $query->andWhere(['l.startcity'=>$params[0]]);
         // 处理第二个参数 排序
         switch ($params[1])
         {
             case 0:
                 break;
             case 1:
-                $query->orderBy('shownum desc');
+                $query->orderBy('l.shownum desc');
                 break;
             case 2:
-                $query->orderBy('price');
+                $query->orderBy('l.price');
                 break;
             case 3:
-                $query->orderBy('price desc');
+                $query->orderBy('l.price desc');
                 break;
             case 4:
-                $query->orderBy('bookcount desc');
+                $query->orderBy('l.bookcount desc');
                 break;
         }
 
@@ -62,10 +66,10 @@ class Line extends ActiveRecord
         {
             if($lineAttr[1] == 0)
             {
-                $query->andWhere("find_in_set($lineAttr[0],attrid)");
+                $query->andWhere("find_in_set($lineAttr[0],l.attrid)");
             }
             if($lineAttr[1]!= 0){
-                $query->andWhere("find_in_set($lineAttr[1],attrid)");
+                $query->andWhere("find_in_set($lineAttr[1],l.attrid)");
             }
         }
         //  分页
@@ -114,9 +118,11 @@ class Line extends ActiveRecord
     public function getListerHome()
     {
         return Line::find()
-            ->select('id,litpic,title,sellpoint')
-            ->where(['ishidden'=>0])
-            ->orderBy('bookcount desc')
+            ->select('l.id,l.litpic,l.title,l.sellpoint')
+            ->alias('l')
+            ->where(['l.ishidden'=>0])
+            ->orderBy('l.bookcount desc')
+            ->innerJoin(LineSuit::tableName() . ' as ls','ls.lineid=l.id')
             ->limit(6)
             ->asArray()->all();
     }

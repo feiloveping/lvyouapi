@@ -50,14 +50,10 @@ class FeiArr
         $pagesize = (int)$pagesize;
         $pagecount = ceil(count($arr) / $pagesize);
         if($page<1) $page = 1;
-        if($page > $pagecount) $page = $pagecount;
+        if($page > $pagecount)
+            return false;
         $offset = $pagesize * ($page - 1 );
-        if($page < $pagecount)
-        {
-            $limit = $pagesize;
-        }else{
-            $limit = count($arr) % $pagesize;
-        }
+        $limit  = $pagesize;
         $data = array_slice($arr,$offset ,$limit);
         if(empty($data))
             return false;

@@ -9,11 +9,14 @@
 namespace app\modules\weixin\controllers;
 
 
+use app\modules\components\helpers\UploadFile;
 use yii\web\Controller;
+use yii\web\UploadedFile;
 
 class ToiletController extends Controller
 {
     public $layout = false;
+    public $enableCsrfValidation=false;
     public function actionIndex()
     {
         return $this->render('index');
@@ -57,5 +60,32 @@ class ToiletController extends Controller
         }
         socket_close($socket);//工作完毕，关闭套接流
     }
+
+    public function actionUpload(){
+        $request = \Yii::$app->request;
+        if($request->isPost){
+
+            $up = new UploadFile();
+            //设置属性(上传的位置， 大小， 类型， 名是是否要随机生成)
+            $up -> set("path", "./img/");
+            $up -> set("maxsize", 2000000);
+            $up -> set("allowtype", array("gif", "png", "jpg","jpeg"));
+            $up -> set("israndname", false);
+
+            //使用对象中的upload方法， 就可以上传文件， 方法需要传一个上传表单的名子 pic, 如果成功返回true, 失败返回false
+            if($up -> upload("pic")) {
+                echo '<pre>';
+                //获取上传后文件名子
+                var_dump($up->getFileName());
+                echo $up->getErrorMsg();
+                exit();
+            }else{
+                echo $up->getErrorMsg();
+                exit();
+            }
+        }
+        return $this->render('upload');
+    }
+
 
 }

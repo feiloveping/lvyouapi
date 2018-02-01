@@ -11,6 +11,7 @@ namespace app\modules\v1\controllers;
 
 use app\modules\components\helpers\FeiValidate;
 use app\modules\components\helpers\MyDateFormat;
+use app\modules\components\helpers\MyImg;
 use app\modules\v1\models\Collection;
 use app\modules\v1\models\Icon;
 use app\modules\v1\models\Member;
@@ -310,35 +311,27 @@ class UserCenterController extends DefaultController
     // 上传头像
     public function actionUploadHeadPic()
     {
-        header('Content-type:text/html;charset=utf-8');
         $base64_image_content       = \Yii::$app->request->post('headpic',null);
-        if(!$base64_image_content) return ['code'=>404,'msg'=>'数据不能为空',data=>null];
-        $api_url           =        \Yii::$app->params['api_url'];
-        if (preg_match('/^(data:\s*image\/(\w+);base64,)/', $base64_image_content, $result)){
-            $type = $result[2];
+        if(!$base64_image_content)
+            return ['code'=>404,'msg'=>'数据不能为空','data'=>null];
+        $myimgObj                   = new MyImg();
+        $api_url                    = \Yii::$app->params['api_url'];
+        $path                       = "./img/lvyou/headpic/" ;
+        $img_url                    = $myimgObj->uploadImgBy64($base64_image_content,$path,$api_url);
+        if(!$img_url)
+            return ['code'=>4041,'msg'=>'文件保存失败','data'=>null];
 
-            $new_file = "./img/lvyou/headpic/".date('Ymd',time())."/";
-            if(!file_exists($new_file))
-            {
-                //检查是否有该文件夹，如果没有就创建，并给予最高权限
-                mkdir($new_file, 0700);
-            }
-            $new_file = $new_file.time().".{$type}";
-            if (file_put_contents($new_file, base64_decode(str_replace($result[1], '', $base64_image_content)))){
-                $img_url = $api_url . trim($new_file,'.' );
-                // 更新用户的头像地址路径
-                $member = Member::findOne($this->mid);
-                $member->litpic = $img_url;
-                if($member->save()) {
-                    // 对修改后的信息保存到融云
-                    \Yii::$app->runAction('v1/rongyun/flush-user',['userid'=>$this->mid,'name'=>$member->nickname,'headpic'=>$img_url]);
-                    return ['code' => 200, 'msg' => '头像保存成功', 'data' => ['headpic' => $img_url]];
-                }
-                else
-                    return ['code'=>4042,'msg'=>'头像保存失败','data'=>['headpic'=>'']];
-            }else
-                return ['code'=>4041,'msg'=>'文件保存失败','data'=>null];
+        // 更新用户的头像地址路径
+        $member                     = Member::findOne($this->mid);
+        $member->litpic             = $img_url;
+        $nickname                   = $member->nickname;
+        if($member->save()) {
+            // 对修改后的信息保存到融云
+            \Yii::$app->runAction('v1/rongyun/flush-user', ['userid' => $this->mid, 'name' => $nickname, 'headpic' => $img_url]);
+            return ['code' => 200, 'msg' => '头像保存成功', 'data' => ['headpic' => $img_url]];
         }
+        else
+            return ['code'=>4042,'msg'=>'头像保存失败','data'=>['headpic'=>'']];
     }
 
 }

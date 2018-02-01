@@ -78,6 +78,12 @@ class SpotController extends DefaultController
     public function actionSpotHot()
     {
         $spot =  Spot::getHotSpot();
+        $app_url = \Yii::$app->params['app_url'];
+        foreach ($spot as $k=>$v)
+        {
+            if(!empty($v['litpic']))
+                $spot[$k]['litpic'] = $app_url . $v['litpic'];
+        }
         return $spot;
     }
 
@@ -356,7 +362,7 @@ class SpotController extends DefaultController
         $spot = $feiArr->pageArr($spot,$page);
         // 对总页数进行处理
         if(empty($spot) || $page>$spot['pagecount'])
-            return ['code'=>200,'data'=>'','msg'=>'未找到数据'];
+            return ['code'=>200,'data'=>['pagecount'=>'','data'=>[]],'msg'=>'未找到数据'];
         else
             return ['code'=>200,'data'=>$spot,'msg'=>''];
     }

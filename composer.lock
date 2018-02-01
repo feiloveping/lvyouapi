@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "6e6afc65783db65976b82eb5fbd7875b",
+    "content-hash": "8575bfc32b1babd67cc41d50be1741ed",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -323,6 +323,37 @@
                 "image processing"
             ],
             "time": "2015-09-19T16:54:05+00:00"
+        },
+        {
+            "name": "jaeger/http",
+            "version": "1.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jae-jae/Http.git",
+                "reference": "2fb9e6bde8c42e3851c7968bd00046c299e45b5e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://files.phpcomposer.com/files/jae-jae/Http/2fb9e6bde8c42e3851c7968bd00046c299e45b5e.zip",
+                "reference": "2fb9e6bde8c42e3851c7968bd00046c299e45b5e",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "QL\\Ext\\Lib\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "HTTP 请求类,修改用于QueryList(http://querylist.cc )",
+            "time": "2017-07-25T07:15:08+00:00"
         },
         {
             "name": "jaeger/phpquery-single",

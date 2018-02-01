@@ -13,10 +13,10 @@ return [
     'GET v1/acity'                              =>'v1/article/city',
     'GET v1/i'                                  =>'v1/default/insert',
     /*      ---------------------------------------景點列表頁 -----------------------------------------     */
-    'GET v1/spotindex'                          =>      'v1/spot/spot-index',         // 景点首页
+    'GET v1/spotindex'                          =>'v1/spot/spot-index',         // 景点首页
     'GET v1/spotlist/<param>/<page:\d+>'      =>'v1/spot/spot-list',                // 景點列表頁
-    'GET v1/spotcondition'                      =>      'v1/spot/condition'   ,       // 景点列表页搜索条件综合
-    'GET v1/spotnear/<lng>/<lat>/<page:\d+>'  =>'v1/spot/spot-near',                // 景點列表頁
+    'GET v1/spotcondition'                      => 'v1/spot/condition'   ,       // 景点列表页搜索条件综合
+    'GET v1/spotnear/<lng>/<lat>/<page:\d+>'  =>'v1/spot/spot-near',                // 景點附近列表頁
     /*      ----------------------------------------景点详情页---------------------------------------------*/
     'GET v1/spotdetail/<id:\d+>'            =>'v1/spot/spot-detail',                  // 景點详情页
     'GET v1/spotaddcollection/<id:\d+>'     =>'v1/spot/spot-add-collection',          // 景點收藏
@@ -30,10 +30,10 @@ return [
     'GET v1/ticketmessage/<id:\d+>'         =>'v1/spot-order/get-spot-ticket-time',  // 景点订单 - 门票信息每天的售价和库存
 
     /* ---------------------------------------------------相册------------------------------------------------------*/
-    'GET v1/photocondition'                 =>'v1/photo/condition',                // 相册 - 条件
-    'GET v1/photolister/<param>/<page:\d+>'=>'v1/photo/lister',                  // 相册 - 列表
-    'GET v1/photodetail/<id:\d+>'            =>'v1/photo/detail',                  // 相册 - 列表
-    'GET v1/photofavorite/<id:\d+>'            =>'v1/photo/favorite',              // 相册 - 点赞
+    'GET v1/photocondition'                     =>'v1/photo/condition',                // 相册 - 条件
+    'GET v1/photolister/<param>/<page:\d+>'   =>'v1/photo/lister',                  // 相册 - 列表
+    'GET v1/photodetail/<id:\d+>'               =>'v1/photo/detail',                  // 相册 - 列表
+    'GET v1/photofavorite/<id:\d+>'             =>'v1/photo/favorite',                // 相册 - 点赞
     /* ----------------------------------------------线路模块 ------------------------------------------------------*/
     'GET v1/linecondition'                    => 'v1/line/condition',               // 线路列表页搜索条件综合
     'GET v1/linelist/<param>/<page:\d+>'    => 'v1/line/lister',                  // 线路列表页
@@ -50,6 +50,9 @@ return [
     'GET v1/comment-head/<typeid:\d+>/<id:\d+>'=> 'v1/comment/comment-head',            // 点评头部信息
     'GET v1/commentlist/<typeid:\d+>/<id:\d+>/<page:\d+>' => 'v1/comment/comment-list', // 评论列表
     'POST v1/commentadd'                       => 'v1/comment/add',                     // 评论添加
+    'POST v1/ordercommentadd'                  => 'v1/comment/order-comment-add',       // 评论添加
+
+
     'GET v1/collectionadd/<typeid:\d+>/<id:\d+>' => 'v1/collection/add-collection-tong', // 添加收藏
     'GET v1/collectiondel/<typeid:\d+>/<id:\d+>' => 'v1/collection/del-collection-tong', // 取消收藏
 
@@ -67,6 +70,7 @@ return [
     'GET v1/hoteldelcollection/<id:\d+>'        =>'v1/hotel/hotel-del-collection', // 酒店取消
     'GET v1/hotelquestionlist/<id:\d+>'         => 'v1/hotel/hotel-question',      //酒店问答列表
     'POST v1/addhotelquestion'                  => 'v1/hotel/question-add',        // 酒店提交问答
+    'GET v1/hotelnear/<lng>/<lat>/<page:\d+>'  =>'v1/hotel/hotel-near',           // 酒店附近列表頁
     /*  --------------------------------------------酒店订单页面--------------------------------------------*/
     'GET v1/hotelorderindex/<hotelid:\d+>'  => 'v1/hotel-order/get-hotel-order-message' ,// 酒店详情页
     'GET v1/roomrmessage/<id:\d+>'          => 'v1/hotel-order/get-hotel-room-time' ,    // 房间的详情时间库存
@@ -132,7 +136,7 @@ return [
     /*  ----------------------------------厕所模块--------------------------------------*/
     'GET v1/toilet-list/<page>'                   =>  'v1/toilet/toilet-list2',
     'GET v1/toilet-detail/<id>'                   =>  'v1/toilet/toilet-detail',
-    'GET v1/toilenear'                              =>  'v1/toilet/member-near-toilet3',
+    'GET v1/toilenear'                              =>  'v1/toilet/member-near-toilet',
     'GET v1/toiletgeo'                              =>  'v1/toilet/update-toilet',
     'POST v1/toiletup'                              =>   'v1/toilet/post-data',
     'GET v1/changehotel'                            =>   'v1/init-all/change-hotel-url',

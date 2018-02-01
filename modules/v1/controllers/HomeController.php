@@ -50,8 +50,12 @@ class HomeController extends DefaultController
     public function actionGetSpotIndex()
     {
         $spot = Spot::getSpotIndex();
-
-
+        $app_url = \Yii::$app->params['app_url'];
+        foreach ($spot as $k=>$v)
+        {
+            if($v['litpic'])
+                $spot[$k]['litpic'] = $app_url . $v['litpic'];
+        }
         return $spot ;
 
     }
@@ -60,7 +64,12 @@ class HomeController extends DefaultController
     public function actionGetHotelIndex()
     {
         $hotel = HotelAttr::getHotelIndex();
-
+        $app_url = \Yii::$app->params['app_url'];
+        foreach ($hotel as $k=>$v)
+        {
+            if($v['litpic'])
+                $hotel[$k]['litpic'] = $app_url . $v['litpic'];
+        }
         return $hotel ;
 
     }
@@ -69,9 +78,11 @@ class HomeController extends DefaultController
     public function actionGetHotelIndex6()
     {
         $hotel = Hotel::hotelIndex6();
+        $app_url = \Yii::$app->params['app_url'];
         if(!empty($hotel))
             foreach ($hotel as $k=>$v)
             {
+                $hotel[$k]['litpic'] = $app_url . $v['litpic'];
                 $hotel[$k]['title'] = mb_substr($v['title'],0,7);
             }
 
@@ -80,13 +91,18 @@ class HomeController extends DefaultController
 
     }
 
+    // 网站首页热门攻略 - 上方
+    public function actionGetArticleUpIndex()
+    {
+        $article = Article::getIndexArticleUp();
+        return $article ;
+    }
+
     // 网站首页热门攻略
     public function actionGetArticleIndex()
     {
         $article = Article::getIndexArticle();
-
         return $article ;
-
     }
 
     // 网站首页热门团购
@@ -155,6 +171,7 @@ class HomeController extends DefaultController
         $spot       =   $this->runAction('get-spot-index');
         $hotel      =   $this->runAction('get-hotel-index6');
         $article    =   $this->runAction('get-article-index');
+        $articleup  =   $this->runAction('get-article-up-index');
         $tuan       =   $this->runAction('get-tuan-index');
         $notes      =   $this->runAction('get-notes-index');
         $photo      =   $this->runAction('get-photo-index');
@@ -165,6 +182,7 @@ class HomeController extends DefaultController
             'banner'        =>      $banner,
             'spot'          =>      $spot,
             'hotel'         =>      $hotel,
+            'articleup'     =>      $articleup,
             'article'       =>      $article,
             'tuan'          =>      $tuan,
             'notes'         =>      $notes,

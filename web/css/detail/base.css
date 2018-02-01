@@ -14,3 +14,4 @@ ul,li,ol,dl,dt,dd{list-style:none;}
 img{border:none;display: block}
 li,body{box-sizing:border-box;}
 #content{overflow-y:auto;-webkit-overflow-scrolling: touch;}
+#content img{width:100%;}

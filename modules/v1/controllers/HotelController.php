@@ -2,6 +2,8 @@
 
 namespace app\modules\v1\controllers;
 
+use app\modules\components\helpers\FeiArr;
+use app\modules\components\helpers\FeiMaplocation;
 use app\modules\v1\models\Advertise;
 use app\modules\v1\models\Collection;
 use app\modules\v1\models\Comment;
@@ -11,6 +13,7 @@ use app\modules\v1\models\HotelAttr;
 use app\modules\v1\models\HotelPricelist;
 use app\modules\v1\models\HotelRank;
 use app\modules\v1\models\HotelRoom;
+use app\modules\v1\models\Icon;
 use app\modules\v1\models\Member;
 use app\modules\v1\models\Piclist;
 use app\modules\v1\models\Question;
@@ -355,5 +358,52 @@ class HotelController extends DefaultController
 
         }else
             return false ;
+    }
+
+    // 附近的酒店
+    public function actionHotelNear()
+    {
+        $hotel = $this->runAction('all-hotel');
+        $request = \Yii::$app->request;
+        $lng = $request->get('lng',98.50);
+        $lat = $request->get('lat',25.03);
+        $page = $request->get('page',1);
+        // 对拿到的数据计算距离并排序
+        $map = new FeiMaplocation();
+        foreach ($hotel as $k=>$v)
+        {
+            $metre = $map->getdistances((double)$lat,(double)$lng,(double)$v['lat'],(double)$v['lng']);
+            $hotel[$k]['metre'] = $map->getMetre($metre);
+        }
+        $feiArr = new FeiArr();
+        $hotel = $feiArr->my_sort($hotel,'metre');
+        $hotel = $feiArr->pageArr($hotel,$page);
+        // 对总页数进行处理
+        if(empty($hotel) || $page>$hotel['pagecount'])
+            return ['code'=>200,'data'=>['pagecount'=>'','data'=>[]],'msg'=>'未找到数据'];
+        else
+            return ['code'=>200,'data'=>$hotel,'msg'=>''];
+    }
+
+    // 获得所有的数据并缓存
+    public function actionAllHotel()
+    {
+        $hotelModel        =       new Hotel();
+        $cache            =       \Yii::$app->cache;
+        $key              =       'all-hotel';
+        $hotel             =       $cache->getOrSet($key,function() use($hotelModel) {
+            $hotel = $hotelModel->getAll();
+            $app_url = \Yii::$app->params['app_url'];
+            foreach ($hotel as $k=>$v)
+            {
+                $iconlists = explode(',',$v['iconlist']);
+                $hotel[$k]['iconlist'] = Icon::getIconTwoNameByIds($iconlists);
+                if(!empty($v['litpic']) && !strpos($v['litpic'],'ttp'))
+                    $hotel[$k]['litpic'] = $app_url . $v['litpic'];
+            }
+            return $hotel;
+        },60);
+
+        return $hotel;
     }
 }

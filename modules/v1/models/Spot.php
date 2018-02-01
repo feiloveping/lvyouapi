@@ -38,14 +38,14 @@ class Spot extends ActiveRecord
     // 景點首頁推薦的6個熱門景點 - 默認按照銷量倒敘排列
     public function getHotSpot()
     {
-        $app_url = \Yii::$app->params['app_url'];
-        $sql = "select id,title,price,concat('$app_url',litpic) as litpic,
-                 concat('http://lvyou.wmqt.net/phone/spots/show_',id,'.html#&pageHome') as spotdetailurl
-                from sline_spot 
-                where ishidden=0 
-                order by bookcount desc 
-                limit 6";
-        return Spot::findBySql($sql)->asArray()->all();
+        $spot = Spot::find()
+            ->select('id,title,price,litpic')
+            ->where(['ishidden'=>0])
+            ->orderBy('bookcount desc')
+            ->limit(6)
+            ->asArray()
+            ->all();
+        return $spot;
     }
 
     // 無條件的景點列表帶分頁
@@ -62,9 +62,7 @@ class Spot extends ActiveRecord
 
         // 对搜索关键字
         if($keyword)
-        {
-            $query->andWhere('title like \'%' . $keyword . '%\'' );
-        }
+            $query->andWhere(['like','title',$keyword] );
 
         // 属性id
         // kindlist-综合排序-价格范围-主题
@@ -142,14 +140,12 @@ class Spot extends ActiveRecord
         $spot['pagecount'] = $pagecount;
 
         // 對列表進行重組,增加icon 圖標
-
-
         foreach ($spot['spot'] as $k=>$v)
         {
             $kindname = [];
             if($v['iconlist'])
             {
-                $query = "select kind as iconname from sline_icon where find_in_set(id,'$v[iconlist]') limit 3";
+                $query = "select kind as iconname from sline_icon where find_in_set(id,'$v[iconlist]') limit 2";
                 $kindname = Spot::findBysql($query)->asArray()->all();
             }
             $spot['spot'][$k]['iconlist'] = $kindname;
@@ -201,7 +197,7 @@ class Spot extends ActiveRecord
     {
         return Spot::find()
             ->select(['id','title','satisfyscore','bookcount','price','litpic','iconlist','lng','lat'])
-            ->where(['ishidden'=>0])
+            ->where('ishidden=0 and price>0')
             ->asArray()
             ->all();
     }

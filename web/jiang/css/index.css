@@ -1,0 +1,58 @@
+#drawLotteryWrapper{
+    width:700px;margin:0 auto;background:#ccc;
+}
+.drawLottery_item{
+    display: inline-block;margin:15px;overflow: hidden;border:1px solid #000;height:200px;
+}
+.drawLotteryItem{
+    position: relative;top:0;
+}
+.drawLotteryItem img{
+    width:200px;height:200px;position: relative;top:0;
+}
+.game_btn{
+    width:200px;height:50px;border-radius:4px;text-align: center;background:green;
+    margin:40px auto;line-height:50px;color:#fff;font-size:20px;cursor: pointer;
+}
+
+.wrapper{
+    position: fixed;top:0;bottom:0;width:100%;
+    background:url("../image/base/background_01.jpg")no-repeat top left;
+    background-size:100% 100%;
+}
+.bottom_bg{
+    position: fixed;bottom:0;width:100%;height:225px;
+    background:url("../image/base/cloud.png")no-repeat top left;
+    background-size:100% 100%;
+}
+.dog{
+    position: fixed;width:370px;height:370px;bottom:110px;z-index:2;
+}
+.dog1{
+    background: url("../image/base/puppy_01.png")no-repeat center center;
+    background-size: 100% 100%;left:40px;
+}
+.dog2{
+    background: url("../image/base/puppy_02.png")no-repeat center center;
+    background-size: 100% 100%;right:40px;
+}
+.round{
+    width:815px;height:815px;margin:140px auto 0 auto;
+    background: url("../image/base/round.png")no-repeat center center;
+    background-size: 100% 100%;
+}
+.wash{
+    margin:0 auto;height:100px;
+    position: relative;top:14px;
+}
+.daiyan{
+    width:1100px;height:280px;position: absolute;
+    left:50%;margin-left:-550px;top:330px;z-index: 2;
+}
+#inter_game{
+    margin:420px auto 0 auto;width:570px;height:120px;cursor: pointer;
+    position: relative;z-index:2;
+}
+#inter_game img{
+    width:100%;height:100%;cursor: pointer;
+}

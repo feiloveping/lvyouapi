@@ -155,7 +155,6 @@ class ArticleController extends DefaultController
         return $attrid;
     }
 
-
     // 攻略条件-综合
     public function actionArticleCondition()
     {
@@ -170,5 +169,7 @@ class ArticleController extends DefaultController
 
         return ['code'=>200,'data'=>$data,'msg'=>'ok'];
     }
+
+
 }
 

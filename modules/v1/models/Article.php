@@ -19,6 +19,7 @@ class Article extends ActiveRecord
         return '{{%article}}';
     }
 
+    // 首页下方的热门攻略
     public function getIndexArticle()
     {
         $app_url = \Yii::$app->params['app_url'];
@@ -26,6 +27,19 @@ class Article extends ActiveRecord
             ->select('id,title,concat(\''.$app_url.'\',`litpic`) as litpic,modtime,shownum')
             ->where('ishidden=0 and litpic is not null')
             ->orderBy('shownum desc')
+            ->asArray()
+            ->limit(3)
+            ->all();
+    }
+
+    // 首页上方的热门攻略
+    public function getIndexArticleUp()
+    {
+        $app_url = \Yii::$app->params['app_url'];
+        return Article::find()
+            ->select('id,title,concat(\''.$app_url.'\',`litpic`) as litpic')
+            ->where('ishidden=0 and litpic is not null')
+            ->orderBy('downnum desc')
             ->asArray()
             ->limit(3)
             ->all();

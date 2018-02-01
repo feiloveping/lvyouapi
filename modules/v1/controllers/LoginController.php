@@ -40,12 +40,12 @@ class LoginController extends DefaultController
             'mobile'    =>  $mobile,
             'pwd'  =>  $password,
         ] ;
-        if(empty($data['mobile']) || empty($data['pwd'])) return ['code'=>401,'data'=>'','msg'=>'手机号或密码不能为空'];
+        if(empty($data['mobile']) || empty($data['pwd'])) return ['code'=>401,'data'=>[],'msg'=>'手机号或密码不能为空'];
         $data['pwd'] = md5($data['pwd']);
 
         $member = Member::getMember($data) ;
 
-        if(! FeiValidate::isMobile($data['mobile']) || empty($member) ) return ['code'=>401,'data'=>'','msg'=>'手机号或密码错误'];
+        if(! FeiValidate::isMobile($data['mobile']) || empty($member) ) return ['code'=>405,'data'=>[],'msg'=>'手机号或密码错误'];
         // 生成token
         $token = FeiToken::createToken($member['mid'],\Yii::$app->params['myEncrypt_key']);
         // 更新登录时间

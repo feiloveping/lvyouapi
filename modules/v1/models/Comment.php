@@ -58,10 +58,8 @@ class Comment extends ActiveRecord
                 ];
             }
         }
-
         foreach ($array as $k=>$v)
         {
-
             if(count($v) < 2)
             {
                 $array[$k]  =   [
@@ -116,13 +114,14 @@ class Comment extends ActiveRecord
         return $hotelcomment;
     }
 
+    // 全部 0 ,好评 1 , 中评 2, 差评 3, 有图 4     1星差评,2-3中评,4-5好评
     // 根据条件进行分页列表-含有嵌套关系
-    public function getCommentByPageLevel($typeid,$id,$page)
+    public function getCommentByPageLevel($typeid,$id,$page , $level='')
     {
         $query      =   Comment::find()
             ->alias('c')
             ->select('c.id,c.memberid,c.content,c.vr_headpic,c.addtime,c.dockid,c.level as star,c.vr_nickname ,
-             m.nickname,c.vr_grade ,m.rank ,m.litpic as headpic ')
+             m.nickname,c.vr_grade , c.piclist ,m.rank ,m.litpic as headpic ')
             ->orderBy('c.id desc')
             ->where('c.isshow=1 ');
 
@@ -132,14 +131,21 @@ class Comment extends ActiveRecord
         if($id != 0)
             $query->andWhere('c.articleid='.$id);
 
+        if($level == 1)
+            $query->andWhere(['or','level=4','level=5']);
+        elseif($level == 2)
+            $query->andWhere(['or','level=2','level=3']);
+        elseif($level == 3)
+            $query->andWhere(['level'=>1]);
+        elseif ($level ==4)
+            $query->andWhere(['not', ['litpic' => null]]);
+
         $countQuery = clone $query;
         $pages = new Pagination(['totalCount' => $countQuery->count()]);
         $pages->pageSize = \Yii::$app->params['page_size'];
 
         $pagecount = $pages->getPageCount();
-
         $articlecomment['pagecount']     =       $pagecount;
-
 
         if($page > $pagecount)
             return false;
@@ -148,7 +154,6 @@ class Comment extends ActiveRecord
             ->leftJoin(Member::tableName() . 'as m' ,'c.memberid=m.mid')
             ->asArray()
             ->all();
-
 
         // 处理被回复关系 - 先格式化数据
         foreach ($commentlist as $v)
@@ -171,7 +176,6 @@ class Comment extends ActiveRecord
             }
             $commentlistInit[$k]['replyname'] = $replyname;
         }
-
 
         $articlecomment['commentlist'] = array_values($commentlistInit);
         return $articlecomment;

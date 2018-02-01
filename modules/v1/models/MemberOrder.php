@@ -20,9 +20,10 @@ class MemberOrder extends ActiveRecord
         $query = MemberOrder::find()
             ->alias('mo')
             ->select('mo.id,ordersn,typeid,supplierlist,productaid,productname,productautoid as productid,
-                    ispinlun as ispinglun,litpic,price,dingnum,mo.status,usedate,departdate,os.status_name
+                    mo.addtime,ispinlun as ispinglun,litpic,price,dingnum,mo.status,usedate,departdate,os.status_name
             ')
             ->leftJoin(TongyongOrderStatus::tableName() . ' os' , 'os.status=mo.status')
+            ->orderBy('mo.addtime desc')
             ->where(['memberid'=>$mid]);
         if($typeid)
         {
@@ -49,9 +50,10 @@ class MemberOrder extends ActiveRecord
     {
         $query = MemberOrder::find()
             ->select('id,ordersn,typeid,supplierlist,productaid,productname,productautoid as productid,
-                    litpic,price,dingnum,status,usedate,departdate,memberid
+                    litpic,price,dingnum,status,usedate,departdate,memberid,addtime
             ')
-            ->where(['memberid'=>$mid]);
+            ->where(['memberid'=>$mid])
+            ->orderBy('addtime desc');
         switch ($status)
         {
             case 1:
@@ -86,17 +88,18 @@ class MemberOrder extends ActiveRecord
         $order = MemberOrder::find()
             ->select('id,typeid,price,dingnum,usedate,departdate,roombalance,roombalancenum')
             ->where(['id'=>$id])
+            ->asArray()
             ->one();
 
         // 加上单方差
-        $total = $order['roombalance'] * $order['roombalancenum'] ;
+        $total = (int)$order['roombalance'] * (int)$order['roombalancenum'] ;
         switch ($order['typeid'])
         {
             case 1: // 线路
                 $total += $order['price'] * $order['dingnum'];;
                 break;
             case 2: // 酒店
-                $day    =   (strtotime($order['departdate']) -  strtotime($order['departdate'])) / 86400 ;
+                $day    =   (strtotime($order['departdate']) -  strtotime($order['usedate'])) / 86400 ;
                 $total += $order['price'] * $order['dingnum'] * $day;
                 break;
             case 5: // 景点
@@ -118,23 +121,6 @@ class MemberOrder extends ActiveRecord
             ->where(['id'=>$id])
             ->asArray()
             ->one();
-
-        // 获取产品名称
-//        switch ($order['typeid'])
-//        {
-//            case 1: // 线路 - 暂定
-//                $title  =   Line::lineEasyDetail($order['productautoid'])['title'];
-//                break;
-//            case 2: // 酒店
-//                $title  =   Hotel::hotelEasyDetail($order['productautoid'])['title'];
-//            case 5: // 景点
-//                $title  =   Spot::getEasySpotByid($order['productautoid'])['title'];
-//                break;
-//            case 13: //团购
-//                $title  =   Tuan::tuanEasyDetail($order['productautoid'])['title'];
-//                break;
-//        }
-//        $order['title'] = $title;
 
         return $order;
 

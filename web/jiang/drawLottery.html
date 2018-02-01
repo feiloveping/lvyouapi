@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1,user-scalable=no">
+    <title>抽取幸运用户</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/drawLottery.css">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="deng deng1"></div>
+        <div class="deng deng2"></div>
+        
+        <div class="center_bg">
+            <div class="clear" style="padding:0 237px;">
+                <p class="award" data-state="1">
+                    <img src="./image/base/thefirstprize.png" alt="">
+                </p>
+                <p class="award" data-state="2">
+                    <img src="./image/base/thesecondprize.png" alt="">
+                </p>
+                <p class="award" data-state="3">
+                    <img src="./image/base/thethirdprize.png" alt="">
+                </p>
+            </div>
+            <div class="rules">
+                <p class="rules_title">抽奖规则</p>
+                <p class="rules_text">
+                    通过电脑摇号随机产生，所有员工中奖几率均等。已经中奖员工，不能参加下一轮摇号抽奖（例如A抽中一等奖，就不能参加二等奖抽奖）。
+                </p>
+                <p class="rules_text">
+                    <span>1</span>
+                    <span>第一轮：三等奖18名（每次产生6名，分三次，依次摇号产生，奖品万利达多功能电热锅1口/名）。</span>
+                </p>
+                <p class="rules_text">
+                    <span>2</span>
+                    <span>第二轮：二等奖8名（每次产生4名，分两次，依次摇号产生，奖品凤凰牌山地自行车1辆/名）。</span>
+                </p>
+                <p class="rules_text">
+                    <span>3</span>
+                    <span>第三轮：一等奖3名（每次产生1名，分三次，依次摇号产生，奖品康佳冰箱1台/名）。</span>
+                </p>
+            </div>
+            <div class="draw_area">
+                <ul class="draw_list clear">
+
+                </ul>
+                <div class="start_btn">
+                    <img src="./image/base/startthedraw_01.png" alt="">
+                </div>
+            </div>
+            <div class="winnerList">
+                <div class="top_title">
+                    <span>奖品名称</span>
+                    <span>获奖用户</span>
+                </div>
+                <ul class="list clear">
+
+                </ul>
+                <div id="check_detail">
+                    <p>查看详细中奖名单 >></p>
+                </div>
+
+            </div>
+        </div>
+        <div class="bottom_bg"></div>
+        <p id="clear"></p>
+    </div>
+    <div id="shader"></div>
+    <div id="success"></div>
+    <!--背景音乐-->
+    <audio id="bg_music" autoplay loop onratechange>
+        <source src="./music/bg_music.mp3" type="audio/mpeg" />
+    </audio>
+    <!--抽奖声音-->
+    <audio id="draw_music" preload>
+        <source src="./music/draw1_music.mp3" type="audio/mpeg" />
+    </audio>
+    <!--中奖音乐-->
+    <audio id="success_music" preload>
+        <source src="./music/success_music.mp3" type="audio/mpeg" />
+    </audio>
+
+    <script>
+        var bg_music = document.getElementById('bg_music');
+        var draw_music = document.getElementById('draw_music');
+        draw_music.playbackRate = 2.5;
+        var success_music = document.getElementById('success_music');
+    </script>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/drawLottery.js"></script>
+
+</body>
+</html>

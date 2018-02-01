@@ -9,6 +9,7 @@
 namespace app\modules\v1\controllers;
 
 
+use app\modules\components\helpers\MyDateFormat;
 use app\modules\v1\models\Comment;
 use app\modules\v1\models\Destinations;
 use app\modules\v1\models\Photo;
@@ -129,7 +130,9 @@ class PhotoController extends DefaultController
         $key = 'photo:favorite:photoid:' . $id . ':mid:' . $mid;
         if($redis->get($key))
             return ['code'=>402,'data'=>'','msg'=>'您今天已赞过'];
-        $redis->setex($key,1,86400);
+        // 获取当天还剩下的时间秒数
+        $lastSecond = MyDateFormat::lastSeconds();
+        $redis->setex($key,$lastSecond,100);
         $photo = Photo::findOne($id);
         $photo->favorite = $photo->favorite + 1;
         $re = $photo->save();

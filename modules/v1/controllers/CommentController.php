@@ -8,7 +8,11 @@
 
 namespace app\modules\v1\controllers;
 
+use app\modules\components\helpers\MyImg;
 use app\modules\v1\models\Comment;
+use app\modules\v1\models\Member;
+use app\modules\v1\models\MemberOrder;
+use yii\web\UploadedFile;
 
 class CommentController extends DefaultController
 {
@@ -26,16 +30,27 @@ class CommentController extends DefaultController
         $articleid  =       $request->get('id',0);
         $typeid     =       $request->get('typeid');
         $page       =       $request->get('page',1);
-
+        $level      =       $request->get('level',0);
         if(!in_array($typeid,array_values($this->typeIdArr)))
             return ['code'=>403,'msg'=>'参数错误','data'=>''];
 
-        $comment    =       Comment::getCommentByPageLevel($typeid,$articleid,$page);
+        $comment    =       Comment::getCommentByPageLevel($typeid,$articleid,$page,$level);
         if(empty($comment))
             return ['code'=>404,'data'=>[],'msg'=>'未找到数据'];
 
         $app_url    =   \Yii::$app->params['app_url'];
         foreach ($comment['commentlist'] as $k=>$v){
+
+            // 处理图片
+            $piclist = explode(',',$v['piclist']);
+
+            foreach ($piclist as $pk=>$pv)
+            {
+                if(!empty($pv))
+                    $piclist[$pk] = $app_url . $pv;
+            }
+            $comment['commentlist'][$k]['piclist'] = $piclist;
+
             // 处理用户头像
             if($v['headpic'])
                 $comment['commentlist'][$k]['headpic'] = $app_url . $v['headpic'];
@@ -153,6 +168,82 @@ class CommentController extends DefaultController
             $commentLister[$k]['piclist']   =   $piclist;
         }
         return $commentLister;
+    }
+
+    // 添加点评
+    public function actionOrderCommentAdd()
+    {
+        // 验证数据的合法性
+        $request = \Yii::$app->request;
+        $id = $request->post('id');
+        $content = strip_tags(htmlentities($request->post('content')));
+        $level = $request->post('level',5);
+        $piclist = $request->post('piclist');
+        $mid = $this->mid;
+        if (!$mid)
+            return ['code' => 401, 'data' => '', 'msg' => '用户未登录'];
+
+        if (!$id)
+            return ['code'=>4030,'msg'=>'订单id未填写','data'=>''];
+
+        if(mb_strlen($content) < 5)
+            return ['code'=>4031,'msg'=>'请输入内容不小于5个字','data'=>''];
+
+
+        // 验证用户id和订单id
+        $orderObj = new MemberOrder();
+        $order = $orderObj->getDetail($id);
+        if ($order['memberid'] != $mid)
+            return ['code' => 403, 'data' => '', 'msg' => '非法数据'];
+
+        // 验证订单状态
+        if ($order['status'] != 5)
+            return ['code' => 405, 'data' => '', 'msg' => '该订单尚未完成'];
+        if ($order['ispinglun'] == 1)
+            return ['code' => 406, 'data' => '', 'msg' => '该订单已经评论过'];
+
+        // 处理图片
+        $pic = [];
+        if(!empty($piclist)){
+            $piclist = explode('-',$piclist);
+            $myimgObj = new MyImg();
+            $api_url = \Yii::$app->params['api_url'];
+            $path = "./img/lvyou/commentimg/" ;
+
+            foreach ($piclist as $k=>$v)
+            {
+                $img = $myimgObj->uploadImgBy64($v,$path,$api_url);
+                if($img)
+                    $pic[$k] = $img;
+            }
+        }
+        $pic = join(',',$pic);
+
+        $data = [
+            'typeid' => $order['typeid'],
+            'orderid' => $id,
+            'articleid' => $order['productautoid'],
+            'memberid' => $mid,
+            'pid' => 0,
+            'content' => $content,
+            'dockid' => 0,
+            'score1' => 0,
+            'isshow' => 1,
+            'addtime' => time(),
+            'level' => $level,
+            'piclist' => $pic,
+
+        ];
+        // 生成数据
+        $re = \Yii::$app->db->createCommand()->insert(Comment::tableName(),$data)->execute();
+        if($re){
+            $memberOrder = MemberOrder::findOne($id);
+            $memberOrder->ispinlun = 1;
+            $memberOrder->save();
+            return ['code'=>200,'data'=>'','msg'=>'评论成功'];
+        }
+        else
+            return ['code'=>4032,'data'=>'','msg'=>'评论失败'];
     }
 
 

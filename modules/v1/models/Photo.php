@@ -72,7 +72,7 @@ class Photo extends ActiveRecord
     {
         return Photo::find()
             ->select('id,title,favorite')
-            ->where(['ishidden'=>0])
+            ->where(['ishidden'=>0,'id'=>$id])
             ->asArray()
             ->one();
     }

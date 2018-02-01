@@ -1,0 +1,28 @@
+#back{
+    color:#fff;text-decoration: none;left:0;position: absolute;top:0;z-index:2;
+}
+.center_bg{
+    padding-top:100px;
+}
+.lettery_item{
+    width:100%;height:auto;
+}
+.state_title{
+    width:295px;height:auto;float:left;padding:0 42px;
+}
+.names{
+    width:1380px;height:auto;float: left;
+}
+.name_item{
+    width:126px;height:183px;margin-right:23px;position: relative;
+}
+.head{
+    background:#f31347;width:126px;height:126px;margin-bottom:10px;
+}
+.name_item img{
+    width:126px;height:126px;
+}
+.name_item{
+    color:#ffdbad;overflow: hidden;float: left;
+}
+

@@ -130,4 +130,10 @@ class MyDateFormat
         return $year - $birthYear;
     }
 
+    public function lastSeconds()
+    {
+        $nextday = strtotime(date('Y-m-d',strtotime('+1 day')));
+        return $nextday - time();
+    }
+
 }

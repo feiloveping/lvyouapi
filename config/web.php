@@ -23,6 +23,7 @@ $config = [
         'weixin'=>[
             'class' => 'app\modules\weixin\Module',
         ],
+
     ],
     'components' => [
         'request' => [

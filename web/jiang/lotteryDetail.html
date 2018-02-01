@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1,user-scalable=no">
+    <title>中奖详情</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/drawLottery.css">
+    <link rel="stylesheet" href="css/lotteryDetail.css">
+</head>
+<body>
+    <div class="wrapper">
+        <a id="back" href="javascript:history.back(-1)">&lt;返回抽奖</a>
+        <div class="deng deng1"></div>
+        <div class="deng deng2"></div>
+        <div class="center_bg">
+            <div class="lettery_item clear">
+                <p class="state_title">
+                    <img src="./image/base/thefirstprize.png" alt="">
+                </p>
+                <div class="names"></div>
+            </div>
+            <div class="lettery_item clear">
+                <p class="state_title">
+                    <img src="./image/base/thesecondprize.png" alt="">
+                </p>
+                <div class="names"></div>
+            </div>
+            <div class="lettery_item clear">
+                <p class="state_title">
+                    <img src="./image/base/thethirdprize.png" alt="">
+                </p>
+                <div class="names"></div>
+            </div>
+        </div>
+        <div class="bottom_bg"></div>
+    </div>
+    <!--背景音乐-->
+    <audio id="bg_music" autoplay loop onratechange>
+        <source src="./music/bg_music.mp3" type="audio/mpeg" />
+    </audio>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/lotteryDetail.js"></script>
+</body>
+</html>
